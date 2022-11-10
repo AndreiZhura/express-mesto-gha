@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 // напишите код здесь
-const user = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
   name: {
     // у пользователя есть имя — опишем требования к имени в схеме:
     type: String, // имя — это строка
@@ -15,9 +15,9 @@ const user = new mongoose.Schema({
     minlength: 2, // минимальная длина имени — 2 символа
     maxlength: 30, // а максимальная — 30 символов
   },
-  avatar:{
+  avatar: {
     type: String,
     required: true,
   },
 });
-module.exports = mongoose.model('user', user);
+module.exports = mongoose.model('user', userSchema);
