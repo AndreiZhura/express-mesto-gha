@@ -1,9 +1,12 @@
 const express = require('express');
+const mongoose = require('mongoose');
 
 const app = express();
 
+mongoose.connect('mongodb://localhost:27017/mestodb');
+
 app.get('/', (req, res) => {
-  res.status(404).send('<h1>Страница не найдена</h1>');
+  res.status(200).send('<h1>Привет мир</h1>');
 });
 
 // подключаемся к серверу mongo
