@@ -5,13 +5,13 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "npx eslint ."
+    "lint": "npx eslint",
+    "start": "node app.js",
+    "dev": "nodemon app.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AndreiZhura/express-mesto-gha.git",
-    "start": "node app.js",
-    "dev": "nodemon app.js"
+    "url": "git+https://github.com/AndreiZhura/express-mesto-gha.git"
   },
   "keywords": [],
   "author": "",
@@ -22,9 +22,14 @@
   "homepage": "https://github.com/AndreiZhura/express-mesto-gha#readme",
   "devDependencies": {
     "eslint": "^8.27.0",
-    "eslint-plugin-react": "^7.31.10"
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-react": "^7.31.10",
+    "nodemon": "^2.0.20"
   },
   "dependencies": {
-    "express": "^4.18.2"
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "express": "^4.18.2",
+    "mongoose": "^6.7.2"
   }
 }
