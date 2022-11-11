@@ -11,6 +11,14 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use((req, res, next) => {
+  req.user = {
+    _id: '636e4e352e8574d451380e0e',
+  };
+
+  next();
+});
+
 app.get('/users', (req, res) => {
   res.send('<h1>привет</h1>');
 });
@@ -20,7 +28,7 @@ app.post('/users', (req, res) => {
 
   Users
     .create({ name, about, avatar })
-    .then((data) => res.status(201).send(data))
+    .then((newUser) => res.status(201).send({ data: newUser }))
     .catch((err) => res.status(400).send(err));
 });
 
