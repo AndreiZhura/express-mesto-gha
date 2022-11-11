@@ -1,7 +1,15 @@
 const router = require('express').Router();
-const { getUser, createUser } = require('../controllers/user');
+const Users = require('../models/user');
 
-router.get('/users', getUser);
-router.post('/users', createUser);
+router.get('/users', (req, res) => {
+  Users.find({})
+    .then((user) => res.send({ data: user }))
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+});
 
-module.exports = router;
+router.post('/users', (req, res) => {
+  const { name, about, avatar } = req.body;
+  Users.create({ name, about, avatar })
+    .then((newUser) => res.status(201).send({ data: newUser }))
+    .catch((err) => res.status(400).send(err));
+});
