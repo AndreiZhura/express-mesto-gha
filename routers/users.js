@@ -8,7 +8,7 @@ const {
   updateUserNameAndabout,
 } = require('../controllers/users');
 
-userRouters.get('/', getUser);
+userRouters.get('/users', getUser);
 userRouters.get('/users/:userId', getUserId);
 userRouters.post('/users', createUser);
 userRouters.patch('/users/me', updateUserNameAndabout);

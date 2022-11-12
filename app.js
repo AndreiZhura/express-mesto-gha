@@ -5,7 +5,7 @@ const userRouters = require('./routers/users');
 const { getCard, createCard, deleteCard } = require('./controllers/card');
 
 const app = express();
-const { PORT = 3000 } = process.env;
+const { PORT = 9222 } = process.env;
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
@@ -13,7 +13,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // user
-app.use('/users', userRouters);
+
+app.use('/', userRouters);
 // card
 app.get('/cards', getCard);
 app.post('/cards', createCard);
