@@ -1,7 +1,15 @@
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const express = require('express');
-const { getUser, getUserId, createUser, updateUserAvatar, updateUserNameAndabout } = require('./controllers/users');
+const {
+  getUser,
+  getUserId,
+  createUser,
+  updateUserAvatar,
+  updateUserNameAndabout,
+} = require('./controllers/users');
+
+const { getCard, createCard } = require('./controllers/card');
 
 const app = express();
 const { PORT = 3000 } = process.env;
@@ -18,11 +26,14 @@ app.use((req, res, next) => {
 
   next();
 });
-
+// user
 app.get('/users', getUser);
 app.get('/users/:userId', getUserId);
 app.post('/users', createUser);
 app.patch('/users/me', updateUserNameAndabout);
 app.patch('/users/me/avatar', updateUserAvatar);
 
+// card
+app.get('/cards', getCard);
+app.post('/cards', createCard);
 app.listen(PORT);
