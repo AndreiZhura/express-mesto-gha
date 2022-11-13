@@ -7,7 +7,7 @@ const {
 } = require('../controllers/users');
 
 userCards.get('/cards', getCard);
-userCards.post('/users', createCard);
+userCards.post('/cards', createCard);
 userCards.delete('/cards/:cardId', deleteCard);
 
 module.exports = userCards;
