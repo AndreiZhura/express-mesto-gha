@@ -32,3 +32,25 @@ module.exports.deleteCard = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
+
+module.exports.likeCard = (req, res) => {
+  card
+    .findByIdAndUpdate(
+      req.params.cardId,
+      { $addToSet: { likes: req.user._id } },
+      { new: true },
+    )
+    .then((user) => res.send({ data: user }))
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+};
+
+module.exports.dislikeCard = (req, res) => {
+  card
+    .findByIdAndUpdate(
+      req.params.cardId,
+      { $pull: { likes: req.user._id } }, // убрать _id из массива
+      { new: true },
+    )
+    .then((user) => res.send({ data: user }))
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+};
