@@ -1,6 +1,5 @@
 const card = require('../models/card');
-
-const ERROR_CODE = 400;
+const { ERROR_CODE } = require('../constants/constants');
 
 module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
@@ -23,14 +22,30 @@ module.exports.getCard = (req, res) => {
   card
     .find({})
     .then((cards) => res.send({ data: cards }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => {
+      if (err.name === 'SomeErrorName') {
+        return res
+          .status(ERROR_CODE)
+          .send({ message: 'Ошибка обработки данных' });
+      }
+
+      return res.status(500).send({ message: err });
+    });
 };
 
 module.exports.deleteCard = (req, res) => {
   card
     .findByIdAndRemove(req.params.cardId)
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => {
+      if (err.name === 'SomeErrorName') {
+        return res
+          .status(ERROR_CODE)
+          .send({ message: 'Ошибка обработки данных' });
+      }
+
+      return res.status(500).send({ message: err });
+    });
 };
 
 module.exports.likeCard = (req, res) => {
@@ -41,7 +56,15 @@ module.exports.likeCard = (req, res) => {
       { new: true },
     )
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => {
+      if (err.name === 'SomeErrorName') {
+        return res
+          .status(ERROR_CODE)
+          .send({ message: 'Ошибка обработки данных' });
+      }
+
+      return res.status(500).send({ message: err });
+    });
 };
 
 module.exports.dislikeCard = (req, res) => {
@@ -52,5 +75,13 @@ module.exports.dislikeCard = (req, res) => {
       { new: true },
     )
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => {
+      if (err.name === 'SomeErrorName') {
+        return res
+          .status(ERROR_CODE)
+          .send({ message: 'Ошибка обработки данных' });
+      }
+
+      return res.status(500).send({ message: err });
+    });
 };
