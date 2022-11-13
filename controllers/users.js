@@ -24,14 +24,14 @@ module.exports.createUser = (req, res) => {
 
 module.exports.updateUserAvatar = (req, res) => {
   const { avatar } = req.body;
-  users.findByIdAndUpdate(req.user.userId, { avatar }, { new: true, runValidators: true })
+  users.findByIdAndUpdate(req.user, { avatar }, { new: true, runValidators: true })
     .then((user) => res.send({ data: user }))
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
 module.exports.updateUserNameAndabout = (req, res) => {
   const { name, about } = req.body;
-  users.findByIdAndUpdate(req.user.userId, { name, about }, { new: true, runValidators: true })
+  users.findByIdAndUpdate(req.user, { name, about }, { new: true, runValidators: true })
     .then((user) => res.send({ data: user }))
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
