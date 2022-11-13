@@ -2,9 +2,9 @@ const card = require('../models/card');
 
 module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
-  const owner = req.user._id;
+  const owner = req.user.userId;
 
-  card.createCard({ name, link, owner })
+  card.create({ name, link, owner })
     .then((createCard) => res.send({ data: createCard }))
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };

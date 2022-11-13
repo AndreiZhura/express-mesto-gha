@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const express = require('express');
 const userRouters = require('./routers/users');
-const { getCard, createCard, deleteCard } = require('./controllers/card');
+const userCardsRouters = require('./routers/card');
 
 const app = express();
 const { PORT = 9222 } = process.env;
@@ -16,9 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/', userRouters);
 // card
-app.get('/cards', getCard);
-app.post('/cards', createCard);
-app.delete('/cards/:cardId', deleteCard);
+app.use('/', userCardsRouters);
 
 app.use((req, res, next) => {
   req.user = {
