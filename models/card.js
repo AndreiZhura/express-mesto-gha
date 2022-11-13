@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const user = require('./users');
+
 // напишите код здесь
 const cardSchema = new mongoose.Schema({
   name: {
@@ -13,19 +13,6 @@ const cardSchema = new mongoose.Schema({
     type: String, // имя — это строка
     required: true, // оно должно быть у каждого пользователя, так что имя — обязательное поле
   },
-  owner: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: user,
-  },
-  likes: {
-    type: mongoose.Schema.Types.ObjectId,
-    default: {},
-    ref: user,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
+
 });
 module.exports = mongoose.model('card', cardSchema);

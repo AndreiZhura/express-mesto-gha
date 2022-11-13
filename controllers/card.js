@@ -1,22 +1,34 @@
 const card = require('../models/card');
 
+const ERROR_CODE = 400;
+
 module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
-  const owner = req.user.userId;
+  const owner = req.user._id;
+  card
+    .create({ name, link, owner })
+    .then((data) => res.status(200).send(data))
+    .catch((err) => {
+      if (err.name === 'SomeErrorName') {
+        return res
+          .status(ERROR_CODE)
+          .send({ message: 'Ошибка обработки данных' });
+      }
 
-  card.create({ name, link, owner })
-    .then((createCard) => res.send({ data: createCard }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+      return res.status(500).send({ message: err });
+    });
 };
 
 module.exports.getCard = (req, res) => {
-  card.find({})
+  card
+    .find({})
     .then((cards) => res.send({ data: cards }))
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
 module.exports.deleteCard = (req, res) => {
-  card.findByIdAndRemove(req.params.id)
+  card
+    .findByIdAndRemove(req.params.cardId)
     .then((user) => res.send({ data: user }))
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
