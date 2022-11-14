@@ -5,7 +5,7 @@ const userRouters = require('./routers/users');
 const userCardsRouters = require('./routers/card');
 
 const app = express();
-const { PORT = 9222 } = process.env;
+const { PORT = 3000 } = process.env;
 
 app.use((req, res, next) => {
   req.user = {

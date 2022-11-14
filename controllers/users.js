@@ -11,6 +11,11 @@ module.exports.getUser = (req, res) => {
           .status(ERROR_CODE)
           .send({ message: 'Ошибка обработки данных' });
       }
+      if (err.name === 'SomeErrorName') {
+        return res
+          .status(ERROR_CODE)
+          .send({ message: 'Ошибка обработки данных' });
+      }
 
       return res.status(500).send({ message: err });
     });
