@@ -1,37 +1,44 @@
 const users = require('../models/users');
-const { ERROR_CODE, INTERNAL_SERVER_ERROR } = require('../constants/constants');
+const { ERROR_CODE, INTERNAL_SERVER_ERROR, FILE_NOT_FOUND } = require('../constants/constants');
 
 module.exports.getUser = (req, res) => {
   users
     .find({})
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'SomeErrorName') {
-        return res
-          .status(ERROR_CODE)
-          .send({ message: 'Ошибка обработки данных' });
-      }
-      if (err.name === 'SomeErrorName') {
+      if (err.name === 'ValidationError') {
         return res
           .status(ERROR_CODE)
           .send({ message: 'Ошибка обработки данных' });
       }
 
-      return res.status(500).send({ message: INTERNAL_SERVER_ERROR });
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: INTERNAL_SERVER_ERROR });
     });
 };
 
 module.exports.getUserId = (req, res) => {
-  users.findById(req.params.userId)
-    .then((user) => res.send({ data: user }))
+  users
+    .findById(req.params.userId)
+    .then((cards) => {
+      if (!cards) {
+        return res
+          .status(FILE_NOT_FOUND)
+          .send({ message: 'Данного пользователя не существует' });
+      }
+      return res.send({ data: cards });
+    })
     .catch((err) => {
-      if (err.name === 'SomeErrorName') {
+      if (err.name === 'ValidationError') {
         return res
           .status(ERROR_CODE)
           .send({ message: 'Ошибка обработки данных' });
       }
 
-      return res.status(500).send({ message: err });
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: 'Ошибка обработки данных' });
     });
 };
 
@@ -42,42 +49,72 @@ module.exports.createUser = (req, res) => {
     .create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'SomeErrorName') {
+      if (err.name === 'ValidationError') {
         return res
           .status(ERROR_CODE)
           .send({ message: 'Ошибка обработки данных' });
       }
 
-      return res.status(500).send({ message: err });
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: 'Ошибка обработки данных' });
     });
 };
 
 module.exports.updateUserAvatar = (req, res) => {
   const { avatar } = req.body;
-  users.findByIdAndUpdate(req.user_id, { avatar }, { new: true, runValidators: true })
-    .then((user) => res.send({ data: user }))
+  users
+    .findByIdAndUpdate(
+      req.user._id,
+      { avatar },
+      { new: true, runValidators: true },
+    )
+    .then((cards) => {
+      if (!cards) {
+        return res
+          .status(FILE_NOT_FOUND)
+          .send({ message: 'Данного пользователя не существует' });
+      }
+      return res.send({ data: cards });
+    })
     .catch((err) => {
-      if (err.name === 'SomeErrorName') {
+      if (err.name === 'ValidationError') {
         return res
           .status(ERROR_CODE)
           .send({ message: 'Ошибка обработки данных' });
       }
 
-      return res.status(500).send({ message: err });
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: 'Ошибка обработки данных' });
     });
 };
 
 module.exports.updateUserNameAndabout = (req, res) => {
   const { name, about } = req.body;
-  users.findByIdAndUpdate(req.user_id, { name, about }, { new: true, runValidators: true })
-    .then((user) => res.send({ data: user }))
+  users
+    .findByIdAndUpdate(
+      req.user._id,
+      { name, about },
+      { new: true, runValidators: true },
+    )
+    .then((cards) => {
+      if (!cards) {
+        return res
+          .status(FILE_NOT_FOUND)
+          .send({ message: 'Данного пользователя не существует' });
+      }
+      return res.send({ data: cards });
+    })
     .catch((err) => {
-      if (err.name === 'SomeErrorName') {
+      if (err.name === 'ValidationError') {
         return res
           .status(ERROR_CODE)
           .send({ message: 'Ошибка обработки данных' });
       }
 
-      return res.status(500).send({ message: err });
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: 'Ошибка обработки данных' });
     });
 };
