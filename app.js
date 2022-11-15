@@ -25,4 +25,6 @@ app.use('/', userRouters);
 // card
 app.use('/', userCardsRouters);
 
+app.use('*', (req, res) => { res.status(404).send({ message: 'Запрашиваемый ресурс не найден' }); });
+
 app.listen(PORT);

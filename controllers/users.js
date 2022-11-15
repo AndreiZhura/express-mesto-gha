@@ -1,5 +1,5 @@
 const users = require('../models/users');
-const { ERROR_CODE } = require('../constants/constants');
+const { ERROR_CODE, INTERNAL_SERVER_ERROR } = require('../constants/constants');
 
 module.exports.getUser = (req, res) => {
   users
@@ -17,7 +17,7 @@ module.exports.getUser = (req, res) => {
           .send({ message: 'Ошибка обработки данных' });
       }
 
-      return res.status(500).send({ message: err });
+      return res.status(500).send({ message: INTERNAL_SERVER_ERROR });
     });
 };
 
@@ -54,7 +54,7 @@ module.exports.createUser = (req, res) => {
 
 module.exports.updateUserAvatar = (req, res) => {
   const { avatar } = req.body;
-  users.findByIdAndUpdate(req.user, { avatar }, { new: true, runValidators: true })
+  users.findByIdAndUpdate(req.user_id, { avatar }, { new: true, runValidators: true })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'SomeErrorName') {
@@ -69,7 +69,7 @@ module.exports.updateUserAvatar = (req, res) => {
 
 module.exports.updateUserNameAndabout = (req, res) => {
   const { name, about } = req.body;
-  users.findByIdAndUpdate(req.user, { name, about }, { new: true, runValidators: true })
+  users.findByIdAndUpdate(req.user_id, { name, about }, { new: true, runValidators: true })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'SomeErrorName') {
