@@ -55,13 +55,12 @@ module.exports.deleteCard = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res
-          .status(ERROR_CODE)
-          .send({ message: 'Ошибка обработки данных' });
+          .status(INTERNAL_SERVER_ERROR)
+          .send({ message: 'Ошибка по умолчанию.' });
       }
-
       return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка по умолчанию.' });
+        .status(ERROR_CODE)
+        .send({ message: 'Ошибка обработки данных' });
     });
 };
 
