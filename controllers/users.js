@@ -14,7 +14,7 @@ module.exports.getUser = (req, res) => {
 
       return res
         .status(INTERNAL_SERVER_ERROR)
-        .send({ message: INTERNAL_SERVER_ERROR });
+        .send({ message: 'Ошибка по умолчанию.' });
     });
 };
 
@@ -38,7 +38,7 @@ module.exports.getUserId = (req, res) => {
 
       return res
         .status(INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка обработки данных' });
+        .send({ message: 'Ошибка по умолчанию.' });
     });
 };
 
@@ -57,7 +57,7 @@ module.exports.createUser = (req, res) => {
 
       return res
         .status(INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка обработки данных' });
+        .send({ message: 'Ошибка по умолчанию.' });
     });
 };
 
@@ -86,7 +86,7 @@ module.exports.updateUserAvatar = (req, res) => {
 
       return res
         .status(INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка обработки данных' });
+        .send({ message: 'Ошибка по умолчанию.' });
     });
 };
 
@@ -115,6 +115,6 @@ module.exports.updateUserNameAndabout = (req, res) => {
 
       return res
         .status(INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка обработки данных' });
+        .send({ message: 'Ошибка по умолчанию.' });
     });
 };

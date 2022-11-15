@@ -20,7 +20,7 @@ module.exports.createCard = (req, res) => {
 
       return res
         .status(INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка обработки данных' });
+        .send({ message: 'Ошибка по умолчанию.' });
     });
 };
 
@@ -37,7 +37,7 @@ module.exports.getCard = (req, res) => {
 
       return res
         .status(INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка обработки данных' });
+        .send({ message: 'Ошибка по умолчанию.' });
     });
 };
 
@@ -61,7 +61,7 @@ module.exports.deleteCard = (req, res) => {
 
       return res
         .status(INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка обработки данных' });
+        .send({ message: 'Ошибка по умолчанию.' });
     });
 };
 
@@ -71,7 +71,6 @@ module.exports.likeCard = (req, res) => {
       req.params.cardId,
       { $addToSet: { likes: req.user._id } },
       { new: true },
-
     )
     .then((cards) => {
       if (!cards) {
@@ -90,7 +89,7 @@ module.exports.likeCard = (req, res) => {
 
       return res
         .status(INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка обработки данных' });
+        .send({ message: 'Ошибка по умолчанию.' });
     });
 };
 
@@ -118,6 +117,6 @@ module.exports.dislikeCard = (req, res) => {
 
       return res
         .status(INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка обработки данных' });
+        .send({ message: 'Ошибка по умолчанию.' });
     });
 };
