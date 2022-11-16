@@ -28,14 +28,8 @@ module.exports.getCard = (req, res) => {
   card
     .find({})
     .then((cards) => res.send({ data: cards }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res
-          .status(ERROR_CODE)
-          .send({ message: 'Ошибка обработки данных' });
-      }
-
-      return res
+    .catch(() => {
+      res
         .status(INTERNAL_SERVER_ERROR)
         .send({ message: 'Ошибка по умолчанию.' });
     });
@@ -53,14 +47,14 @@ module.exports.deleteCard = (req, res) => {
       return res.send({ data: cards });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         return res
-          .status(INTERNAL_SERVER_ERROR)
-          .send({ message: 'Ошибка по умолчанию.' });
+          .status(ERROR_CODE)
+          .send({ message: 'Ошибка обработки данных' });
       }
       return res
-        .status(ERROR_CODE)
-        .send({ message: 'Ошибка обработки данных' });
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: 'Ошибка по умолчанию.' });
     });
 };
 
@@ -80,14 +74,14 @@ module.exports.likeCard = (req, res) => {
       return res.send({ data: cards });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         return res
-          .status(INTERNAL_SERVER_ERROR)
-          .send({ message: 'Ошибка по умолчанию.' });
+          .status(ERROR_CODE)
+          .send({ message: 'Ошибка обработки данных' });
       }
       return res
-        .status(ERROR_CODE)
-        .send({ message: 'Ошибка обработки данных' });
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: 'Ошибка по умолчанию.' });
     });
 };
 
@@ -107,13 +101,13 @@ module.exports.dislikeCard = (req, res) => {
       return res.send({ data: cards });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         return res
-          .status(INTERNAL_SERVER_ERROR)
-          .send({ message: 'Ошибка по умолчанию.' });
+          .status(ERROR_CODE)
+          .send({ message: 'Ошибка обработки данных' });
       }
       return res
-        .status(ERROR_CODE)
-        .send({ message: 'Ошибка обработки данных' });
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: 'Ошибка по умолчанию.' });
     });
 };

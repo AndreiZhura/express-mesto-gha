@@ -1,18 +1,16 @@
 const users = require('../models/users');
-const { ERROR_CODE, INTERNAL_SERVER_ERROR, FILE_NOT_FOUND } = require('../constants/constants');
+const {
+  ERROR_CODE,
+  INTERNAL_SERVER_ERROR,
+  FILE_NOT_FOUND,
+} = require('../constants/constants');
 
 module.exports.getUser = (req, res) => {
   users
     .find({})
     .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res
-          .status(ERROR_CODE)
-          .send({ message: 'Ошибка обработки данных' });
-      }
-
-      return res
+    .catch(() => {
+      res
         .status(INTERNAL_SERVER_ERROR)
         .send({ message: 'Ошибка по умолчанию.' });
     });
@@ -30,7 +28,7 @@ module.exports.getUserId = (req, res) => {
       return res.send({ data: cards });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         return res
           .status(INTERNAL_SERVER_ERROR)
           .send({ message: 'Ошибка по умолчанию.' });
