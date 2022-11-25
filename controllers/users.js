@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs');
 const users = require('../models/users');
 const {
   ERROR_CODE,
@@ -40,16 +41,26 @@ module.exports.getUserId = (req, res) => {
 };
 
 module.exports.createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
+  const {
+    name, about, avatar, email,
+    password,
+  } = req.body;
 
-  users
-    .create({ name, about, avatar })
+  users.create({
+    name,
+    about,
+    avatar,
+    email,
+    password,
+  });
+  bcrypt
+    .hash(req.body.password, 10)
     .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
+    .catch(() => {
+      if (!email || !password) {
         return res
           .status(ERROR_CODE)
-          .send({ message: 'Ошибка обработки данных' });
+          .send({ message: 'Email или пароль пустые' });
       }
 
       return res
