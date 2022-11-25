@@ -1,4 +1,3 @@
-const bcrypt = require('bcryptjs');
 const users = require('../models/users');
 const {
   ERROR_CODE,
@@ -46,21 +45,16 @@ module.exports.createUser = (req, res) => {
     password,
   } = req.body;
 
-  users.create({
-    name,
-    about,
-    avatar,
-    email,
-    password,
-  });
-  bcrypt
-    .hash(req.body.password, 10)
+  users
+    .create({
+      name, about, avatar, email, password,
+    })
     .then((user) => res.send({ data: user }))
     .catch(() => {
       if (!email || !password) {
         return res
           .status(ERROR_CODE)
-          .send({ message: 'Email или пароль пустые' });
+          .send({ message: 'Email или пароль не могут быть пустыми!!!' });
       }
 
       return res
