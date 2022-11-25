@@ -5,8 +5,8 @@ const {
   ERROR_CODE,
   INTERNAL_SERVER_ERROR,
   FILE_NOT_FOUND,
-  SALT_ROUND,
   AUTHORIZATION_REQUIRED,
+  SALT_ROUND,
 } = require('../constants/constants');
 
 module.exports.getUser = (req, res) => {
@@ -60,15 +60,15 @@ module.exports.createUser = (req, res) => {
   bcrypt.hash(req.body.password, SALT_ROUND)
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (!email || !password) {
-        return res
-          .status(ERROR_CODE)
-          .send({ message: 'Email или пароль не могут быть пустыми!!! ' });
-      }
       if (err.name === 'ValidationError') {
         return res
           .status(ERROR_CODE)
           .send({ message: 'Ошибка обработки данных' });
+      }
+      if (!email || !password) {
+        return res
+          .status(ERROR_CODE)
+          .send({ message: 'Email или пароль не могут быть пустыми!!!' });
       }
 
       return res
@@ -80,7 +80,8 @@ module.exports.createUser = (req, res) => {
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
 
-  users.findOne({ email })
+  users
+    .findOne({ email })
     .then((user) => {
       // напишите код здесь
       if (!user) {
