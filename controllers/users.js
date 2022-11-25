@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const users = require('../models/users');
 
 const {
@@ -80,29 +81,17 @@ module.exports.createUser = (req, res) => {
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
 
-  users
-    .findOne({ email })
+  return users.findUserByCredentials(email, password)
     .then((user) => {
-      // напишите код здесь
-      if (!user) {
-        // пользователь с такой почтой не найден
-        return Promise.reject(new Error('Неправильные почта или пароль'));
-      }
-      return bcrypt.compare(password, user.password);
+      // аутентификация успешна! пользователь в переменной user
+      const token = jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' });
+      res.send({ token });
     })
-    // eslint-disable-next-line consistent-return
-    .then((matched) => {
-      if (!matched) {
-        // хеши не совпали — отклоняем промис
-        return Promise.reject(new Error('Неправильные почта или пароль'));
-      }
-
-      // аутентификация успешна
-      res.send({ message: 'Всё верно!' });
-    })
-
     .catch((err) => {
-      res.status(AUTHORIZATION_REQUIRED).send({ message: err.message });
+      // ошибка аутентификации
+      res
+        .status(AUTHORIZATION_REQUIRED)
+        .send({ message: err.message });
     });
 };
 
