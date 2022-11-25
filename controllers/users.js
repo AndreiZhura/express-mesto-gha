@@ -1,8 +1,12 @@
+const bcrypt = require('bcryptjs');
 const users = require('../models/users');
+
 const {
   ERROR_CODE,
   INTERNAL_SERVER_ERROR,
   FILE_NOT_FOUND,
+  SALT_ROUND,
+  AUTHORIZATION_REQUIRED,
 } = require('../constants/constants');
 
 module.exports.getUser = (req, res) => {
@@ -47,19 +51,57 @@ module.exports.createUser = (req, res) => {
 
   users
     .create({
-      name, about, avatar, email, password,
-    })
+      name,
+      about,
+      avatar,
+      email,
+      password,
+    });
+  bcrypt.hash(req.body.password, SALT_ROUND)
     .then((user) => res.send({ data: user }))
-    .catch(() => {
+    .catch((err) => {
       if (!email || !password) {
         return res
           .status(ERROR_CODE)
-          .send({ message: 'Email или пароль не могут быть пустыми!!!' });
+          .send({ message: 'Email или пароль не могут быть пустыми!!! ' });
+      }
+      if (err.name === 'ValidationError') {
+        return res
+          .status(ERROR_CODE)
+          .send({ message: 'Ошибка обработки данных' });
       }
 
       return res
         .status(INTERNAL_SERVER_ERROR)
         .send({ message: 'Ошибка по умолчанию.' });
+    });
+};
+
+module.exports.login = (req, res) => {
+  const { email, password } = req.body;
+
+  users.findOne({ email })
+    .then((user) => {
+      // напишите код здесь
+      if (!user) {
+        // пользователь с такой почтой не найден
+        return Promise.reject(new Error('Неправильные почта или пароль'));
+      }
+      return bcrypt.compare(password, user.password);
+    })
+    // eslint-disable-next-line consistent-return
+    .then((matched) => {
+      if (!matched) {
+        // хеши не совпали — отклоняем промис
+        return Promise.reject(new Error('Неправильные почта или пароль'));
+      }
+
+      // аутентификация успешна
+      res.send({ message: 'Всё верно!' });
+    })
+
+    .catch((err) => {
+      res.status(AUTHORIZATION_REQUIRED).send({ message: err.message });
     });
 };
 
