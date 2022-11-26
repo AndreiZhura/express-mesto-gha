@@ -141,25 +141,32 @@ module.exports.createUser = (req, res) => {
     .catch((err) => res.status(400).send(err));
 };
 
+// controllers/users.js
+
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
-    return res.status(403).send({ message: 'нету Email или пароля!' });
-  }
-  users
-    .findOne({ email })
+  users.findOne({ email }).select('+password')
     .then((user) => {
-      // напишите код здесь
+      console.log(user);
       if (!user) {
-        // пользователь с такой почтой не найден
         return Promise.reject(new Error('Неправильные почта или пароль'));
       }
-      return bcrypt.compare(password, user.password, (error, isValidPassword) => {
-        if (!isValidPassword) {
-          return res.status(401).send({ message: 'пароль не верный' });
-        }
-        return res.send(user);
-      });
+
+      return bcrypt.compare(password, user.password);
+    })
+    .then((matched) => {
+      if (!matched) {
+        // хеши не совпали — отклоняем промис
+        return Promise.reject(new Error('Неправильные почта или пароль'));
+      }
+
+      // аутентификация успешна
+      return res.send({ message: 'Всё верно!' });
+    })
+    .catch((err) => {
+      res
+        .status(401)
+        .send({ message: err.message });
     });
 };
