@@ -42,47 +42,6 @@ module.exports.getUserId = (req, res) => {
     });
 };
 
-module.exports.createUser = (req, res) => {
-  const {
-    name, about, avatar, email,
-    password,
-  } = req.body;
-
-  if (!email || !password) {
-    return res
-      .status(ERROR_CODE)
-      .send({ message: 'Email или пароль не могут быть пустыми' });
-  }
-
-  bcrypt.hash(password, SALT_ROUND, (error, hash) => {
-    if (error) return res.status(500).send({ message: 'errors' });
-    users
-      .findOne({ email })
-      .then((user) => {
-        if (user) {
-          return res
-            .status(403)
-            .send({ message: 'такой пользователь уже существует' });
-        }
-      })
-      .catch((err) => {
-        res.status(500).send({ message: err });
-      });
-
-    users
-      .create({
-        name,
-        about,
-        avatar,
-        email,
-        password: hash,
-      })
-      .then(({ user }) => {
-        res.status(201).send({ user });
-      });
-  });
-};
-
 module.exports.updateUserAvatar = (req, res) => {
   const { avatar } = req.body;
   users
@@ -138,5 +97,69 @@ module.exports.updateUserNameAndabout = (req, res) => {
       return res
         .status(INTERNAL_SERVER_ERROR)
         .send({ message: 'Ошибка по умолчанию.' });
+    });
+};
+
+exports.createUser = (req, res) => {
+  // хешируем пароль
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
+
+  if (!email || !password) {
+    return res
+      .status(400)
+      .send({ message: 'Пожалуйста вбейте и Email и Пароль!' });
+  }
+
+  users
+    .findOne({ email })
+    .then((user) => {
+      if (user) {
+        return res
+          .status(403)
+          .send({ message: 'Такой пользователь уже существует!' });
+      }
+    })
+    .catch(() => {
+      res.status(500).send({ message: 'Что-то пошло не так' });
+    });
+
+  return bcrypt
+    .hash(req.body.password, SALT_ROUND)
+    .then((hash) => users.create({
+      name,
+      avatar,
+      about,
+      email,
+      password: hash, // записываем хеш в базу
+    }))
+    .then((user) => res.send(user))
+    .catch((err) => res.status(400).send(err));
+};
+
+module.exports.login = (req, res) => {
+  const { email, password } = req.body;
+
+  users
+    .findOne({ email })
+    .then((user) => {
+      if (!user) {
+        return Promise.reject(new Error('Неправильные почта или пароль'));
+      }
+
+      return bcrypt.compare(password, user.password);
+    })
+    .then((matched) => {
+      if (!matched) {
+        // хеши не совпали — отклоняем промис
+        return Promise.reject(new Error('Неправильные почта или пароль'));
+      }
+
+      // аутентификация успешна
+      return res.send({ message: 'Всё верно!' });
+    })
+    .catch((err) => {
+      res.status(401).send({ message: err.message });
     });
 };
