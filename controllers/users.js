@@ -1,4 +1,5 @@
-const bcrypt = require('bcrypt');
+/* eslint-disable consistent-return */
+const bcrypt = require('bcryptjs');
 const users = require('../models/users');
 
 const {
@@ -101,7 +102,6 @@ module.exports.updateUserNameAndabout = (req, res) => {
 };
 
 module.exports.createUser = (req, res) => {
-  // хешируем пароль
   const {
     name, about, avatar, email, password,
   } = req.body;
@@ -125,7 +125,7 @@ module.exports.createUser = (req, res) => {
     .catch(() => {
       res.status(500).send({ message: 'Что-то пошло не так' });
     });
-
+  // хешируем пароль
   return bcrypt
     .hash(req.body.password, SALT_ROUND)
     .then((hash) => users.create({
@@ -145,7 +145,18 @@ module.exports.login = (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(403).send({ message: 'нету Email или пароля!' });
+    return res.status(403).send({ message: 'Неправильная почта или пароль' });
   }
-  return res.status(200).send({ message: 'Всё верно!' });
+  users.findOne({ email })
+    .then((user) => {
+      if (!user) {
+        return Promise.reject(new Error('Неправильная почта или пароль'));
+      }
+      return bcrypt.compare(password, user.password, (error, isValidError) => {
+        if (!isValidError) {
+          return res.status(401).send({ message: 'пароль не верный' });
+        }
+        return res.send(user);
+      });
+    });
 };
