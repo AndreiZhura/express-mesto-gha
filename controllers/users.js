@@ -100,7 +100,7 @@ module.exports.updateUserNameAndabout = (req, res) => {
     });
 };
 
-exports.createUser = (req, res) => {
+module.exports.createUser = (req, res) => {
   // хешируем пароль
   const {
     name, about, avatar, email, password,
@@ -114,6 +114,7 @@ exports.createUser = (req, res) => {
 
   users
     .findOne({ email })
+    // eslint-disable-next-line consistent-return
     .then((user) => {
       if (user) {
         return res
@@ -134,32 +135,17 @@ exports.createUser = (req, res) => {
       email,
       password: hash, // записываем хеш в базу
     }))
-    .then((user) => res.send(user))
+    .then((user) => {
+      res.status(201).send(user);
+    })
     .catch((err) => res.status(400).send(err));
 };
 
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
 
-  users
-    .findOne({ email })
-    .then((user) => {
-      if (!user) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
-      }
-
-      return bcrypt.compare(password, user.password);
-    })
-    .then((matched) => {
-      if (!matched) {
-        // хеши не совпали — отклоняем промис
-        return Promise.reject(new Error('Неправильные почта или пароль'));
-      }
-
-      // аутентификация успешна
-      return res.send({ message: 'Всё верно!' });
-    })
-    .catch((err) => {
-      res.status(401).send({ message: err.message });
-    });
+  if (!email || !password) {
+    return res.status(403).send({ message: 'нету Email или пароля!' });
+  }
+  return res.status(200).send({ message: 'Всё верно!' });
 };
