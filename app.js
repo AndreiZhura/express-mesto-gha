@@ -4,7 +4,6 @@ const express = require('express');
 const userRouters = require('./routers/users');
 const userCardsRouters = require('./routers/card');
 const { FILE_NOT_FOUND } = require('./constants/constants');
-const auth = require('./middlewares/auth');
 
 const app = express();
 const { PORT = 3000 } = process.env;
@@ -19,12 +18,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/', userRouters);
 // card
 app.use('/', userCardsRouters);
-
-// авторизация
-app.use(auth);
-
-// роуты, которым авторизация нужна
-app.use('/users', require('./routers/users'));
 
 app.use('*', (req, res) => { res.status(FILE_NOT_FOUND).send({ message: 'Запрашиваемый ресурс не найден' }); });
 

@@ -35,7 +35,7 @@ module.exports.getUserId = (req, res) => {
       if (err.name === 'CastError') {
         return res
           .status(ERROR_CODE)
-          .send({ message: 'Ошибка обработки данных' });
+          .send({ message: 'Ошибка обработки данных_1' });
       }
       return res
         .status(INTERNAL_SERVER_ERROR)
@@ -63,7 +63,7 @@ module.exports.updateUserAvatar = (req, res) => {
       if (err.name === 'ValidationError') {
         return res
           .status(ERROR_CODE)
-          .send({ message: 'Ошибка обработки данных' });
+          .send({ message: 'Ошибка обработки данных_2' });
       }
 
       return res
@@ -92,7 +92,7 @@ module.exports.updateUserNameAndabout = (req, res) => {
       if (err.name === 'ValidationError') {
         return res
           .status(ERROR_CODE)
-          .send({ message: 'Ошибка обработки данных' });
+          .send({ message: 'Ошибка обработки данных_3' });
       }
 
       return res
@@ -159,7 +159,7 @@ module.exports.login = (req, res) => {
 };
 
 module.exports.getUserMe = (req, res) => {
-  users.findById(req.user._id)
+  users.findById(req.user)
     .then((user) => {
       if (!user) {
         return res
@@ -172,7 +172,7 @@ module.exports.getUserMe = (req, res) => {
       if (err.name === 'CastError') {
         return res
           .status(ERROR_CODE)
-          .send({ message: 'Ошибка обработки данных' });
+          .send({ message: 'Ошибка обработки данных_4' });
       }
       return res
         .status(INTERNAL_SERVER_ERROR)
