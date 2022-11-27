@@ -157,3 +157,25 @@ module.exports.login = (req, res) => {
       res.status(401).send({ message: err.message });
     });
 };
+
+module.exports.getUserMe = (req, res) => {
+  users.findById(req.user._id)
+    .then((user) => {
+      if (!user) {
+        return res
+          .status(FILE_NOT_FOUND)
+          .send({ message: 'Данного пользователя не существует' });
+      }
+      return res.send({ data: user });
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res
+          .status(ERROR_CODE)
+          .send({ message: 'Ошибка обработки данных' });
+      }
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: 'Ошибка по умолчанию.' });
+    });
+};

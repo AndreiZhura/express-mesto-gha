@@ -7,11 +7,13 @@ const {
   updateUserAvatar,
   updateUserNameAndabout,
   login,
+  getUserMe,
 } = require('../controllers/users');
 
 userRouters.get('/users', getUser);
 userRouters.get('/users/:userId', getUserId);
 ///
+userRouters.get('/users/me', getUserMe);
 userRouters.post('/signin', login);
 userRouters.post('/signup', createUser);
 ///
