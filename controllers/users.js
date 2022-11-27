@@ -1,12 +1,9 @@
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const users = require('../models/users');
 
 const {
   ERROR_CODE,
   INTERNAL_SERVER_ERROR,
   FILE_NOT_FOUND,
-  SALT_ROUND,
 } = require('../constants/constants');
 
 module.exports.getUser = (req, res) => {
@@ -36,6 +33,28 @@ module.exports.getUserId = (req, res) => {
         return res
           .status(ERROR_CODE)
           .send({ message: 'Ошибка обработки данных_1' });
+      }
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: 'Ошибка по умолчанию.' });
+    });
+};
+
+module.exports.getUserMe = (req, res) => {
+  users.findById(req.params)
+    .then((user) => {
+      if (!user) {
+        return res
+          .status(FILE_NOT_FOUND)
+          .send({ message: 'Данного пользователя не существует' });
+      }
+      return res.send({ data: user });
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res
+          .status(ERROR_CODE)
+          .send({ message: 'Ошибка обработки данных_4' });
       }
       return res
         .status(INTERNAL_SERVER_ERROR)
@@ -95,85 +114,6 @@ module.exports.updateUserNameAndabout = (req, res) => {
           .send({ message: 'Ошибка обработки данных_3' });
       }
 
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка по умолчанию.' });
-    });
-};
-
-module.exports.createUser = (req, res) => {
-  // хешируем пароль
-  const {
-    name, about, avatar, email, password,
-  } = req.body;
-
-  if (!email || !password) {
-    return res
-      .status(400)
-      .send({ message: 'Пожалуйста вбейте и Email и Пароль!' });
-  }
-
-  users
-    .findOne({ email })
-    // eslint-disable-next-line consistent-return
-    .then((user) => {
-      if (user) {
-        return res
-          .status(403)
-          .send({ message: 'Такой пользователь уже существует!' });
-      }
-    })
-    .catch(() => {
-      res.status(500).send({ message: 'Что-то пошло не так' });
-    });
-
-  return bcrypt
-    .hash(password, SALT_ROUND)
-    .then((hash) => users.create({
-      name,
-      avatar,
-      about,
-      email,
-      password: hash, // записываем хеш в базу
-    }))
-    .then((user) => {
-      res.status(201).send(user);
-    })
-    .catch((err) => res.status(400).send(err));
-};
-
-// controllers/users.js
-
-module.exports.login = (req, res) => {
-  const { email, password } = req.body;
-
-  return users.findUserByCredentials(email, password)
-    .then((user) => {
-      // напишите код здесь
-      const token = jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' });
-      res.send({ token });
-    })
-    .catch((err) => {
-      res.status(401).send({ message: err.message });
-    });
-};
-
-module.exports.getUserMe = (req, res) => {
-  users.findById(req.user)
-    .then((user) => {
-      if (!user) {
-        return res
-          .status(FILE_NOT_FOUND)
-          .send({ message: 'Данного пользователя не существует' });
-      }
-      return res.send({ data: user });
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res
-          .status(ERROR_CODE)
-          .send({ message: 'Ошибка обработки данных_4' });
-      }
       return res
         .status(INTERNAL_SERVER_ERROR)
         .send({ message: 'Ошибка по умолчанию.' });
