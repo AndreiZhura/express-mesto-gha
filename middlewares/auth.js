@@ -3,7 +3,6 @@ const { SECRET_KEY_JWT } = require('../constants/constants');
 // eslint-disable-next-line consistent-return
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;
-  console.log(req.headers);
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
     return res
@@ -19,7 +18,7 @@ module.exports = (req, res, next) => {
   } catch (err) {
     return res
       .status(401)
-      .send({ message: 'вот так' });
+      .send({ message: err });
   }
 
   req.user = payload; // записываем пейлоуд в объект запроса
