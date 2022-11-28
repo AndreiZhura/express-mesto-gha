@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const { SALT_ROUND } = require('../constants/constants');
+const { SALT_ROUND, SECRET_KEY_JWT } = require('../constants/constants');
 const users = require('../models/users');
 
 module.exports.createUser = (req, res) => {
@@ -51,7 +51,7 @@ module.exports.login = (req, res) => {
   return users.findUserByCredentials(email, password)
     .then((user) => {
       // напишите код здесь
-      const token = jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' });
+      const token = jwt.sign({ _id: user._id }, SECRET_KEY_JWT, { expiresIn: '7d' });
       res.cookie('token', token, { httpOnly: true }).send(token);
     })
     .catch((err) => {
