@@ -21,11 +21,11 @@ app.post('/signup', createUser);
 app.post('/signin', login);
 
 // авторизация
-
+app.use(auth);
 // роуты, которым авторизация нужна
-app.use('/', auth, userRouters);
 // card
-app.use('/', auth, userCardsRouters);
+app.use('/', userRouters);
+app.use('/', userCardsRouters);
 
 app.use('*', (req, res) => { res.status(FILE_NOT_FOUND).send({ message: 'Запрашиваемый ресурс не найден' }); });
 

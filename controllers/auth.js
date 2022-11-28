@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const { SALT_ROUND } = require('../constants/constants');
@@ -52,8 +52,7 @@ module.exports.login = (req, res) => {
     .then((user) => {
       // напишите код здесь
       const token = jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' });
-      console.log(token);
-      res.cookie('token', token, { httpOnly: true }).send({ token });
+      res.cookie('token', token, { httpOnly: true }).send(token);
     })
     .catch((err) => {
       res.status(401).send({ message: err.message });

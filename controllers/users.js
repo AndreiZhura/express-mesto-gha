@@ -1,5 +1,4 @@
 const users = require('../models/users');
-
 const {
   ERROR_CODE,
   INTERNAL_SERVER_ERROR,
