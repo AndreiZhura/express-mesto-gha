@@ -2,8 +2,8 @@ const users = require('../models/users');
 const {
   ERROR_CODE,
   INTERNAL_SERVER_ERROR,
-  FILE_NOT_FOUND,
 } = require('../constants/constants');
+const NotFoundError = require('../errors/errors');
 
 module.exports.getUser = (req, res) => {
   users
@@ -21,9 +21,9 @@ module.exports.getUserId = (req, res) => {
     .findById(req.params.userId)
     .then((cards) => {
       if (!cards) {
-        return res
-          .status(FILE_NOT_FOUND)
-          .send({ message: 'Данного пользователя не существует' });
+        // если такого пользователя нет,
+        // сгенерируем исключение
+        throw new NotFoundError('Нет пользователя с таким id');
       }
       return res.send({ data: cards });
     })
@@ -43,9 +43,7 @@ module.exports.getUserMe = (req, res) => {
   users.findById(req.user)
     .then((user) => {
       if (!user) {
-        return res
-          .status(FILE_NOT_FOUND)
-          .send({ message: 'Данного пользователя не существует' });
+        throw new NotFoundError('Нет пользователя с таким id');
       }
       return res.send({ data: user });
     })
@@ -71,9 +69,7 @@ module.exports.updateUserAvatar = (req, res) => {
     )
     .then((cards) => {
       if (!cards) {
-        return res
-          .status(FILE_NOT_FOUND)
-          .send({ message: 'Данного пользователя не существует' });
+        throw new NotFoundError('Нет пользователя с таким id');
       }
       return res.send({ data: cards });
     })
@@ -81,7 +77,7 @@ module.exports.updateUserAvatar = (req, res) => {
       if (err.name === 'ValidationError') {
         return res
           .status(ERROR_CODE)
-          .send({ message: 'Ошибка обработки данных_2' });
+          .send({ message: 'Ошибка обработки данных' });
       }
 
       return res
@@ -100,9 +96,7 @@ module.exports.updateUserNameAndabout = (req, res) => {
     )
     .then((cards) => {
       if (!cards) {
-        return res
-          .status(FILE_NOT_FOUND)
-          .send({ message: 'Данного пользователя не существует' });
+        throw new NotFoundError('Нет пользователя с таким id');
       }
       return res.send({ data: cards });
     })
