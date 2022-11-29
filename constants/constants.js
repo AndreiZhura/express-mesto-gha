@@ -6,3 +6,5 @@ module.exports.INTERNAL_SERVER_ERROR = 500;
 module.exports.SALT_ROUND = 10;
 /// jwt
 module.exports.SECRET_KEY_JWT = 'some-secret-key';
+/// regex
+module.exports.Avatar_regex = /^((http|https|ftp):\/\/)\www.?\[a-zA-Z0-9_]#$/;

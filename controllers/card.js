@@ -1,41 +1,64 @@
 const card = require('../models/card');
-const { ErrorCode, NotFoundError } = require('../errors/ErrorCode');
+const {
+  ERROR_CODE,
+  INTERNAL_SERVER_ERROR,
+  FILE_NOT_FOUND,
+} = require('../constants/constants');
 
-module.exports.createCard = (req, res, err, next) => {
+module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
   const owner = req.user._id;
   card
     .create({ name, link, owner })
     .then((data) => res.status(200).send(data))
-    .catch(next);
-  if (err.name === 'ValidationError') {
-    throw new ErrorCode('Нет пользователя с таким id');
-  }
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return res
+          .status(ERROR_CODE)
+          .send({ message: 'Ошибка обработки данных' });
+      }
+
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: 'Ошибка по умолчанию.' });
+    });
 };
 
-module.exports.getCard = (req, res, next) => {
+module.exports.getCard = (req, res) => {
   card
     .find({})
     .then((cards) => res.send({ data: cards }))
-    .catch(next);
+    .catch(() => {
+      res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: 'Ошибка по умолчанию.' });
+    });
 };
 
-module.exports.deleteCard = (req, res, err, next) => {
+module.exports.deleteCard = (req, res) => {
   card
     .findByIdAndRemove(req.params.cardId)
     .then((cards) => {
       if (!cards) {
-        throw new NotFoundError('Нет карточки с таким id');
-      }
-      if (err.name === 'CastError') {
-        throw new ErrorCode('Данный пользователь уже существует');
+        return res
+          .status(FILE_NOT_FOUND)
+          .send({ message: 'Данной карточки не существует' });
       }
       return res.send({ data: cards });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res
+          .status(ERROR_CODE)
+          .send({ message: 'Ошибка обработки данных' });
+      }
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: 'Ошибка по умолчанию.' });
+    });
 };
 
-module.exports.likeCard = (req, res, err, next) => {
+module.exports.likeCard = (req, res) => {
   card
     .findByIdAndUpdate(
       req.params.cardId,
@@ -44,17 +67,25 @@ module.exports.likeCard = (req, res, err, next) => {
     )
     .then((cards) => {
       if (!cards) {
-        throw new NotFoundError('Нет карточки с таким id');
-      }
-      if (err.name === 'CastError') {
-        throw new ErrorCode('Данный пользователь уже существует');
+        return res
+          .status(FILE_NOT_FOUND)
+          .send({ message: 'Данной карточки не существует' });
       }
       return res.send({ data: cards });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res
+          .status(ERROR_CODE)
+          .send({ message: 'Ошибка обработки данных' });
+      }
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: 'Ошибка по умолчанию.' });
+    });
 };
 
-module.exports.dislikeCard = (req, res, err, next) => {
+module.exports.dislikeCard = (req, res) => {
   card
     .findByIdAndUpdate(
       req.params.cardId,
@@ -63,12 +94,20 @@ module.exports.dislikeCard = (req, res, err, next) => {
     )
     .then((cards) => {
       if (!cards) {
-        throw new NotFoundError('Нет карточки с таким id');
-      }
-      if (err.name === 'CastError') {
-        throw new ErrorCode('Данный пользователь уже существует');
+        return res
+          .status(FILE_NOT_FOUND)
+          .send({ message: 'Данной карточки не существует' });
       }
       return res.send({ data: cards });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res
+          .status(ERROR_CODE)
+          .send({ message: 'Ошибка обработки данных' });
+      }
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: 'Ошибка по умолчанию.' });
+    });
 };

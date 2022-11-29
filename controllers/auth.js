@@ -1,17 +1,18 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { SALT_ROUND, SECRET_KEY_JWT } = require('../constants/constants');
-const { AuthorizationRequired, Forbidden, ErrorCode } = require('../errors/AuthorizationRequired');
 const users = require('../models/users');
 
-module.exports.createUser = (req, res, next) => {
+module.exports.createUser = (req, res) => {
   // хешируем пароль
   const {
     name, about, avatar, email, password,
   } = req.body;
 
   if (!email || !password) {
-    throw new AuthorizationRequired('Запрос не был применён, поскольку ему не хватает действительных учётных данных для целевого ресурса!');
+    return res
+      .status(400)
+      .send({ message: 'Пожалуйста вбейте и Email и Пароль!' });
   }
 
   users
@@ -19,14 +20,17 @@ module.exports.createUser = (req, res, next) => {
     // eslint-disable-next-line consistent-return
     .then((user) => {
       if (user) {
-        throw new Forbidden('Данный пользователь уже существует');
+        return res
+          .status(403)
+          .send({ message: 'Такой пользователь уже существует!' });
       }
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        throw new ErrorCode('Ошибка обработки данных!');
+      if (err.code === 11000) {
+        // Обработка ошибки
+        res.status(409).send({ message: 'Что-то пошло не так' });
       }
-      next(err);
+      res.status(500).send({ message: 'Что-то пошло не так' });
     });
 
   return bcrypt
@@ -41,10 +45,10 @@ module.exports.createUser = (req, res, next) => {
     .then((user) => {
       res.status(201).send(user);
     })
-    .catch(next);
+    .catch((err) => res.status(400).send(err));
 };
 
-module.exports.login = (req, res, next) => {
+module.exports.login = (req, res) => {
   const { email, password } = req.body;
 
   return users.findUserByCredentials(email, password)
@@ -53,5 +57,7 @@ module.exports.login = (req, res, next) => {
       const token = jwt.sign({ _id: user._id }, SECRET_KEY_JWT, { expiresIn: '7d' });
       res.cookie('token', token, { httpOnly: true }).send(token);
     })
-    .catch(next);
+    .catch((err) => {
+      res.status(401).send({ message: err.message });
+    });
 };
