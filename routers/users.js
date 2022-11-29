@@ -1,4 +1,5 @@
 const userRouters = require('express').Router();
+const { celebrate, Joi } = require('celebrate');
 
 const {
   getUserMe,
@@ -14,8 +15,17 @@ userRouters.get('/users', getUser);
 
 userRouters.get('/users/:userId', getUserId);
 
-userRouters.patch('/users/me', updateUserNameAndabout);
+userRouters.patch('/users/me', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+  }),
+}), updateUserNameAndabout);
 
-userRouters.patch('/users/me/avatar', updateUserAvatar);
+userRouters.patch('/users/me/avatar', celebrate({
+  body: Joi.object().keys({
+    avatar: Joi.string().regex(/^((http|https|ftp):\/\/)\www.?\[a-zA-Z0-9_]#$/),
+  }),
+}), updateUserAvatar);
 
 module.exports = userRouters;
