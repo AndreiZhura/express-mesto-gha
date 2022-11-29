@@ -1,18 +1,17 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { SALT_ROUND, SECRET_KEY_JWT } = require('../constants/constants');
+const { AuthorizationRequired, Forbidden } = require('../errors/AuthorizationRequired');
 const users = require('../models/users');
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   // хешируем пароль
   const {
     name, about, avatar, email, password,
   } = req.body;
 
   if (!email || !password) {
-    return res
-      .status(400)
-      .send({ message: 'Пожалуйста вбейте и Email и Пароль!' });
+    throw new AuthorizationRequired('Запрос не был применён, поскольку ему не хватает действительных учётных данных для целевого ресурса!');
   }
 
   users
@@ -20,18 +19,10 @@ module.exports.createUser = (req, res) => {
     // eslint-disable-next-line consistent-return
     .then((user) => {
       if (user) {
-        return res
-          .status(403)
-          .send({ message: 'Такой пользователь уже существует!' });
+        throw new Forbidden('Данный пользователь уже существует');
       }
     })
-    .catch((err) => {
-      if (err.code === 11000) {
-        // Обработка ошибки
-        res.status(409).send({ message: 'Что-то пошло не так' });
-      }
-      res.status(500).send({ message: 'Что-то пошло не так' });
-    });
+    .catch(next);
 
   return bcrypt
     .hash(password, SALT_ROUND)
@@ -45,10 +36,10 @@ module.exports.createUser = (req, res) => {
     .then((user) => {
       res.status(201).send(user);
     })
-    .catch((err) => res.status(400).send(err));
+    .catch(next);
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return users.findUserByCredentials(email, password)
@@ -57,7 +48,5 @@ module.exports.login = (req, res) => {
       const token = jwt.sign({ _id: user._id }, SECRET_KEY_JWT, { expiresIn: '7d' });
       res.cookie('token', token, { httpOnly: true }).send(token);
     })
-    .catch((err) => {
-      res.status(401).send({ message: err.message });
-    });
+    .catch(next);
 };

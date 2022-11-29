@@ -15,11 +15,10 @@ module.exports = (req, res, next) => {
 
   try {
     payload = jwt.verify(token, SECRET_KEY_JWT);
-  } catch (e) {
-    const err = new Error('Необходима авторизация');
-    err.statusCode = 401;
-
-    next(err);
+  } catch (err) {
+    return res
+      .status(401)
+      .send({ message: err });
   }
 
   req.user = payload; // записываем пейлоуд в объект запроса

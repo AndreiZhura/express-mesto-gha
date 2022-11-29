@@ -1,45 +1,26 @@
 const users = require('../models/users');
-const {
-  ERROR_CODE,
-  INTERNAL_SERVER_ERROR,
-} = require('../constants/constants');
-const NotFoundError = require('../errors/errors');
+const { NotFoundError } = require('../errors/NotFoundError');
 
-module.exports.getUser = (req, res) => {
+module.exports.getUser = (req, res, next) => {
   users
     .find({})
     .then((user) => res.send({ data: user }))
-    .catch(() => {
-      res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка по умолчанию.' });
-    });
+    .catch(next);
 };
 
-module.exports.getUserId = (req, res) => {
+module.exports.getUserId = (req, res, next) => {
   users
     .findById(req.params.userId)
     .then((cards) => {
       if (!cards) {
-        // если такого пользователя нет,
-        // сгенерируем исключение
         throw new NotFoundError('Нет пользователя с таким id');
       }
       return res.send({ data: cards });
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res
-          .status(ERROR_CODE)
-          .send({ message: 'Ошибка обработки данных_1' });
-      }
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка по умолчанию.' });
-    });
+    .catch(next);
 };
 
-module.exports.getUserMe = (req, res) => {
+module.exports.getUserMe = (req, res, next) => {
   users.findById(req.user)
     .then((user) => {
       if (!user) {
@@ -47,19 +28,10 @@ module.exports.getUserMe = (req, res) => {
       }
       return res.send({ data: user });
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res
-          .status(ERROR_CODE)
-          .send({ message: 'Ошибка обработки данных_4' });
-      }
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка по умолчанию.' });
-    });
+    .catch(next);
 };
 
-module.exports.updateUserAvatar = (req, res) => {
+module.exports.updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
   users
     .findByIdAndUpdate(
@@ -73,20 +45,10 @@ module.exports.updateUserAvatar = (req, res) => {
       }
       return res.send({ data: cards });
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res
-          .status(ERROR_CODE)
-          .send({ message: 'Ошибка обработки данных' });
-      }
-
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка по умолчанию.' });
-    });
+    .catch(next);
 };
 
-module.exports.updateUserNameAndabout = (req, res) => {
+module.exports.updateUserNameAndabout = (req, res, next) => {
   const { name, about } = req.body;
   users
     .findByIdAndUpdate(
@@ -100,15 +62,5 @@ module.exports.updateUserNameAndabout = (req, res) => {
       }
       return res.send({ data: cards });
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res
-          .status(ERROR_CODE)
-          .send({ message: 'Ошибка обработки данных_3' });
-      }
-
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка по умолчанию.' });
-    });
+    .catch(next);
 };
