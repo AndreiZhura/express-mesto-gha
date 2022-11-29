@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { SALT_ROUND, SECRET_KEY_JWT } = require('../constants/constants');
-const { AuthorizationRequired, Forbidden } = require('../errors/AuthorizationRequired');
+const { AuthorizationRequired, Forbidden, ErrorCode } = require('../errors/AuthorizationRequired');
 const users = require('../models/users');
 
 module.exports.createUser = (req, res, next) => {
@@ -22,7 +22,12 @@ module.exports.createUser = (req, res, next) => {
         throw new Forbidden('Данный пользователь уже существует');
       }
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        throw new ErrorCode('Ошибка обработки данных!');
+      }
+      next(err);
+    });
 
   return bcrypt
     .hash(password, SALT_ROUND)
