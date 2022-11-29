@@ -4,6 +4,7 @@ const express = require('express');
 const userRouters = require('./routers/users');
 const userCardsRouters = require('./routers/card');
 const { FILE_NOT_FOUND } = require('./constants/constants');
+const errors = require('./middlewares/errors');
 
 const app = express();
 const { PORT = 3000 } = process.env;
@@ -26,6 +27,8 @@ app.use(auth);
 // card
 app.use('/', userRouters);
 app.use('/', userCardsRouters);
+
+app.use(errors);
 
 app.use('*', (req, res) => { res.status(FILE_NOT_FOUND).send({ message: 'Запрашиваемый ресурс не найден' }); });
 

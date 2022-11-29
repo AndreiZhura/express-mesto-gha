@@ -2,9 +2,10 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { SALT_ROUND, SECRET_KEY_JWT } = require('../constants/constants');
 const Conflict = require('../errors/Conflict');
+const Forbidden = require('../errors/Forbidden');
 const users = require('../models/users');
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   // хешируем пароль
   const {
     name, about, avatar, email, password,
@@ -19,15 +20,9 @@ module.exports.createUser = (req, res) => {
     // eslint-disable-next-line consistent-return
     .then((user) => {
       if (user) {
-        return res
-          .status(403)
-          .send({ message: 'Такой пользователь уже существует!' });
+        throw new Forbidden('Данный пользователь уже существует');
       }
-    })
-    .catch(() => {
-      res.status(500).send({ message: 'Что-то пошло не так' });
-    });
-
+    }).catch(next);
   return bcrypt
     .hash(password, SALT_ROUND)
     .then((hash) => users.create({
