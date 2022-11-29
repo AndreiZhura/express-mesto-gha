@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { SALT_ROUND, SECRET_KEY_JWT } = require('../constants/constants');
+const Conflict = require('../errors/Conflict');
 const users = require('../models/users');
 
 module.exports.createUser = (req, res) => {
@@ -10,9 +11,7 @@ module.exports.createUser = (req, res) => {
   } = req.body;
 
   if (!email || !password) {
-    return res
-      .status(400)
-      .send({ message: 'Пожалуйста вбейте и Email и Пароль!' });
+    throw new Conflict('Пожалуйста вбейте и Email и Пароль!');
   }
 
   users
@@ -25,11 +24,7 @@ module.exports.createUser = (req, res) => {
           .send({ message: 'Такой пользователь уже существует!' });
       }
     })
-    .catch((err) => {
-      if (err.code === 11000) {
-        // Обработка ошибки
-        res.status(409).send({ message: 'Что-то пошло не так' });
-      }
+    .catch(() => {
       res.status(500).send({ message: 'Что-то пошло не так' });
     });
 
