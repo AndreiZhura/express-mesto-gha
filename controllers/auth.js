@@ -36,7 +36,12 @@ module.exports.createUser = (req, res) => {
       password: hash, // записываем хеш в базу
     }))
     .then((user) => {
-      res.status(201).send(user);
+      res.status(201).send({
+        user: user.email,
+        about: user.about,
+        avatar: user.avatar,
+        _id: user._id,
+      });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -55,6 +60,6 @@ module.exports.login = (req, res) => {
       res.cookie('token', token, { httpOnly: true }).send({ token });
     })
     .catch((err) => {
-      res.status(400).send({ message: err.message });
+      res.status(401).send({ message: err.message });
     });
 };
