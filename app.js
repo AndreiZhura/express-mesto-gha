@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const express = require('express');
+const { celebrate, Joi } = require('celebrate');
 const userRouters = require('./routers/users');
 const userCardsRouters = require('./routers/card');
 const { FILE_NOT_FOUND } = require('./constants/constants');
@@ -17,7 +18,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // роуты, не требующие авторизации,
 // например, регистрация и логин
-app.post('/signup', createUser);
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().min(2).max(30),
+    password: Joi.string().required().min(2),
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().min(2).max(30),
+  }),
+}), createUser);
 app.post('/signin', login);
 
 // авторизация
