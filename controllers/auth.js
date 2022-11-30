@@ -20,15 +20,11 @@ module.exports.createUser = (req, res) => {
     .then((user) => {
       if (user) {
         return res
-          .status(403)
+          .status(409)
           .send({ message: 'Такой пользователь уже существует!' });
       }
     })
-    .catch((err) => {
-      if (err.code === 11000) {
-        // Обработка ошибки
-        res.status(409).send({ message: 'Что-то пошло не так' });
-      }
+    .catch(() => {
       res.status(500).send({ message: 'Что-то пошло не так' });
     });
 
@@ -42,7 +38,7 @@ module.exports.createUser = (req, res) => {
       password: hash, // записываем хеш в базу
     }))
     .then((user) => {
-      res.status(201).send(user);
+      res.status(201).send({ user });
     })
     .catch((err) => res.status(400).send(err));
 };

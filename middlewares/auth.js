@@ -17,8 +17,8 @@ module.exports = (req, res, next) => {
     payload = jwt.verify(token, SECRET_KEY_JWT);
   } catch (err) {
     return res
-      .status(401)
-      .send({ message: 'dfgdfgsdfgdsfgdfsgdfs' });
+      .status(400)
+      .send({ message: err.message });
   }
 
   req.user = payload; // записываем пейлоуд в объект запроса
