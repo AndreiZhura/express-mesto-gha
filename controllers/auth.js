@@ -24,7 +24,11 @@ module.exports.createUser = (req, res) => {
           .send({ message: 'Такой пользователь уже существует!' });
       }
     })
-    .catch(() => {
+    .catch((err) => {
+      if (err.code === 11000) {
+        // Обработка ошибки
+        res.status(409).send({ message: 'Что-то пошло не так' });
+      }
       res.status(500).send({ message: 'Что-то пошло не так' });
     });
 
