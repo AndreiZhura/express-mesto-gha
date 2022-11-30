@@ -26,7 +26,10 @@ module.exports.createUser = (req, res) => {
           .send({ message: 'Такой пользователь уже существует!' });
       }
     })
-    .catch(() => {
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send('плохой запрос');
+      }
       res.status(500).send({ message: 'Что-то пошло не так' });
     });
 
