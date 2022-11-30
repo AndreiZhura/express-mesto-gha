@@ -1,15 +1,16 @@
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const express = require('express');
-const { celebrate, Joi } = require('celebrate');
+const { errors } = require('celebrate');
+const { FILE_NOT_FOUND } = require('./constants/constants');
 const userRouters = require('./routers/users');
 const userCardsRouters = require('./routers/card');
-const { FILE_NOT_FOUND } = require('./constants/constants');
 
 const app = express();
 const { PORT = 3000 } = process.env;
 const { createUser, login } = require('./controllers/auth');
 const auth = require('./middlewares/auth');
+const joiCreateUser = require('./joiAndCelebrate/joi');
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
@@ -18,7 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // роуты, не требующие авторизации,
 // например, регистрация и логин
-app.post('/signup', createUser);
+app.post('/signup', joiCreateUser, createUser);
 app.post('/signin', login);
 
 // авторизация
@@ -27,6 +28,8 @@ app.use(auth);
 // card
 app.use('/', userRouters);
 app.use('/', userCardsRouters);
+
+app.use(errors());
 
 app.use('*', (req, res) => { res.status(FILE_NOT_FOUND).send({ message: 'Запрашиваемый ресурс не найден' }); });
 
