@@ -1,8 +1,6 @@
 const userRouters = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 
-const { Avatar } = require('../constants/constants');
-
 const {
   getUserMe,
   getUser,
@@ -30,7 +28,7 @@ userRouters.patch('/users/me', celebrate({
 
 userRouters.patch('/users/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().regex(Avatar),
+    avatar: Joi.string(),
   }),
 }), updateUserAvatar);
 
