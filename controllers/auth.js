@@ -9,7 +9,7 @@ const Unauthorized = require('../errors/Unauthorized');
 ///
 const users = require('../models/users');
 
-module.exports.createUser = (req, res, next) => {
+module.exports.createUser = (req, res, err, next) => {
   // хешируем пароль
   const {
     name, about, avatar, email, password,
@@ -25,6 +25,9 @@ module.exports.createUser = (req, res, next) => {
     .then((user) => {
       if (user) {
         throw new Forbidden('Данный пользователь уже существует');
+      }
+      if (err.name === 'ValidationError') {
+        throw new ErrorCode('Ошибка обработки данных');
       }
     }).catch(next);
   return bcrypt
