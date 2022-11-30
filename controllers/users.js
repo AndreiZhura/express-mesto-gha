@@ -33,9 +33,6 @@ module.exports.getUserId = (req, res) => {
           .status(ERROR_CODE)
           .send({ message: 'Ошибка обработки данных_1' });
       }
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'введены некоректные данные' });
-      }
       return res
         .status(INTERNAL_SERVER_ERROR)
         .send({ message: 'Ошибка по умолчанию.' });
