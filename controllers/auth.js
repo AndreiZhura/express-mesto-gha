@@ -2,18 +2,16 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { SALT_ROUND, SECRET_KEY_JWT } = require('../constants/constants');
 const ErrorCode = require('../errors/ErrorCode');
-const Forbidden = require('../errors/Forbidden');
-const Unauthorized = require('../errors/Unauthorized');
 const users = require('../models/users');
 
-module.exports.createUser = (req, res, next) => {
+module.exports.createUser = (req, res) => {
   // хешируем пароль
   const {
     name, about, avatar, email, password,
   } = req.body;
 
   if (!email || !password) {
-    throw new ErrorCode('Нету Email или пароля');
+    throw new ErrorCode('Пожалуйста вбейте и Email и Пароль!');
   }
 
   users
@@ -21,10 +19,18 @@ module.exports.createUser = (req, res, next) => {
     // eslint-disable-next-line consistent-return
     .then((user) => {
       if (user) {
-        next(new Forbidden('Имя пользователя уже существует'));
+        return res
+          .status(403)
+          .send({ message: 'Такой пользователь уже существует!' });
       }
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.code === 11000) {
+        // Обработка ошибки
+        res.status(409).send({ message: 'Что-то пошло не так' });
+      }
+      res.status(500).send({ message: 'Что-то пошло не так' });
+    });
 
   return bcrypt
     .hash(password, SALT_ROUND)
@@ -38,14 +44,10 @@ module.exports.createUser = (req, res, next) => {
     .then((user) => {
       res.status(201).send(user);
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new Error('Введены ны некорректные данные'));
-      } next(err);
-    });
+    .catch((err) => res.status(400).send(err));
 };
 
-module.exports.login = (req, res, next) => {
+module.exports.login = (req, res) => {
   const { email, password } = req.body;
 
   return users.findUserByCredentials(email, password)
@@ -56,7 +58,5 @@ module.exports.login = (req, res, next) => {
     })
     .catch((err) => {
       res.status(401).send({ message: err.message });
-      next(new Unauthorized('err.message'));
-      next(err);
     });
 };
