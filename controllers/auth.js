@@ -1,22 +1,19 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { SALT_ROUND, SECRET_KEY_JWT } = require('../constants/constants');
-/// Ошибки
-const Conflict = require('../errors/Conflict');
-const Forbidden = require('../errors/Forbidden');
 const ErrorCode = require('../errors/ErrorCode');
+const Forbidden = require('../errors/Forbidden');
 const Unauthorized = require('../errors/Unauthorized');
-///
 const users = require('../models/users');
 
-module.exports.createUser = (req, res, err, next) => {
+module.exports.createUser = (req, res, next) => {
   // хешируем пароль
   const {
     name, about, avatar, email, password,
   } = req.body;
 
   if (!email || !password) {
-    throw new Conflict('Пожалуйста вбейте и Email и Пароль!');
+    throw new ErrorCode('Нету Email или пароля');
   }
 
   users
@@ -24,12 +21,11 @@ module.exports.createUser = (req, res, err, next) => {
     // eslint-disable-next-line consistent-return
     .then((user) => {
       if (user) {
-        throw new Forbidden('Данный пользователь уже существует');
+        next(new Forbidden('Имя пользователя уже существует'));
       }
-      if (err.name === 'ValidationError') {
-        throw new ErrorCode('Ошибка обработки данных');
-      }
-    }).catch(next);
+    })
+    .catch(next);
+
   return bcrypt
     .hash(password, SALT_ROUND)
     .then((hash) => users.create({
@@ -42,12 +38,14 @@ module.exports.createUser = (req, res, err, next) => {
     .then((user) => {
       res.status(201).send(user);
     })
-    .catch(() => {
-      throw new ErrorCode('некорректный запрос серверу');
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new Error('Введены ны некорректные данные'));
+      } next(err);
     });
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return users.findUserByCredentials(email, password)
@@ -56,7 +54,9 @@ module.exports.login = (req, res) => {
       const token = jwt.sign({ _id: user._id }, SECRET_KEY_JWT, { expiresIn: '7d' });
       res.cookie('token', token, { httpOnly: true }).send(token);
     })
-    .catch(() => {
-      throw new Unauthorized('Ошибка авторизации');
+    .catch((err) => {
+      res.status(401).send({ message: err.message });
+      next(new Unauthorized('err.message'));
+      next(err);
     });
 };
