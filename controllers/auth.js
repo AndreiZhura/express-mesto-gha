@@ -1,6 +1,5 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
 const { SALT_ROUND, SECRET_KEY_JWT } = require('../constants/constants');
 const users = require('../models/users');
 
@@ -25,12 +24,6 @@ module.exports.createUser = (req, res) => {
           .status(409)
           .send({ message: 'Такой пользователь уже существует!' });
       }
-    })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send('плохой запрос');
-      }
-      res.status(500).send({ message: 'Что-то пошло не так' });
     });
 
   return bcrypt
@@ -45,7 +38,11 @@ module.exports.createUser = (req, res) => {
     .then((user) => {
       res.status(201).send(user);
     })
-    .catch((err) => res.status(400).send(err));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'введены некоректные данные' });
+      }
+    });
 };
 
 module.exports.login = (req, res) => {
@@ -55,7 +52,7 @@ module.exports.login = (req, res) => {
     .then((user) => {
       // напишите код здесь
       const token = jwt.sign({ _id: user._id }, SECRET_KEY_JWT, { expiresIn: '7d' });
-      res.cookie('token', token, { httpOnly: true }).send(token);
+      res.cookie('token', token, { httpOnly: true }).send({ token });
     })
     .catch((err) => {
       res.status(400).send({ message: err.message });
