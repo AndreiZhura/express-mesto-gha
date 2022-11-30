@@ -8,7 +8,7 @@ const {
 module.exports.getUser = (req, res) => {
   users
     .find({})
-    .then((user) => res.status(200).send({ data: user }))
+    .then((user) => res.status(200).send({ message: user }))
     .catch(() => {
       res
         .status(INTERNAL_SERVER_ERROR)
