@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const express = require('express');
 const { errors } = require('celebrate');
+const { celebrate, Joi } = require('celebrate');
 const { FILE_NOT_FOUND } = require('./constants/constants');
 const userRouters = require('./routers/users');
 const userCardsRouters = require('./routers/card');
@@ -10,7 +11,6 @@ const app = express();
 const { PORT = 3000 } = process.env;
 const { createUser, login } = require('./controllers/auth');
 const auth = require('./middlewares/auth');
-const joiCreateUser = require('./joiAndCelebrate/joi');
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
@@ -19,7 +19,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // роуты, не требующие авторизации,
 // например, регистрация и логин
-app.post('/signup', joiCreateUser, createUser);
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().min(2).max(30),
+    password: Joi.string().required().min(2),
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().min(2).max(30),
+  }),
+}), createUser);
 app.post('/signin', login);
 
 // авторизация
