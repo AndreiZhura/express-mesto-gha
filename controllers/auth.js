@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+
 const { SALT_ROUND, SECRET_KEY_JWT } = require('../constants/constants');
-const ErrorCode = require('../errors/ErrorCode');
 const users = require('../models/users');
 
 module.exports.createUser = (req, res) => {
@@ -11,7 +11,9 @@ module.exports.createUser = (req, res) => {
   } = req.body;
 
   if (!email || !password) {
-    throw new ErrorCode('Пожалуйста вбейте и Email и Пароль!');
+    return res
+      .status(400)
+      .send({ message: 'Пожалуйста вбейте и Email и Пароль!' });
   }
 
   users
@@ -24,11 +26,7 @@ module.exports.createUser = (req, res) => {
           .send({ message: 'Такой пользователь уже существует!' });
       }
     })
-    .catch((err) => {
-      if (err.code === 11000) {
-        // Обработка ошибки
-        res.status(409).send({ message: 'Что-то пошло не так' });
-      }
+    .catch(() => {
       res.status(500).send({ message: 'Что-то пошло не так' });
     });
 
@@ -42,7 +40,7 @@ module.exports.createUser = (req, res) => {
       password: hash, // записываем хеш в базу
     }))
     .then((user) => {
-      res.status(201).send({ user });
+      res.status(201).send(user);
     })
     .catch((err) => res.status(400).send(err));
 };
@@ -57,6 +55,6 @@ module.exports.login = (req, res) => {
       res.cookie('token', token, { httpOnly: true }).send(token);
     })
     .catch((err) => {
-      res.status(401).send({ message: err.message });
+      res.status(400).send({ message: err.message });
     });
 };

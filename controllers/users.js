@@ -1,49 +1,67 @@
 const users = require('../models/users');
-/// Ошибки
-const NotFoundError = require('../errors/NotFoundError');
-const ErrorCode = require('../errors/ErrorCode');
+const {
+  ERROR_CODE,
+  INTERNAL_SERVER_ERROR,
+  FILE_NOT_FOUND,
+} = require('../constants/constants');
 
-module.exports.getUser = (req, res, next) => {
+module.exports.getUser = (req, res) => {
   users
     .find({})
-    .then((user) => res.send({ data: user }))
-    .catch(next);
+    .then((user) => res.status(200).send({ data: user }))
+    .catch(() => {
+      res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: 'Ошибка по умолчанию.' });
+    });
 };
 
-module.exports.getUserId = (req, res, next) => {
+module.exports.getUserId = (req, res) => {
   users
     .findById(req.params.userId)
     .then((cards) => {
       if (!cards) {
-        throw new NotFoundError('Данного пользователя не существует');
+        return res
+          .status(FILE_NOT_FOUND)
+          .send({ message: 'Данного пользователя не существует' });
       }
       return res.send({ data: cards });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new ErrorCode('Ошибка обработки данных');
+        return res
+          .status(ERROR_CODE)
+          .send({ message: 'Ошибка обработки данных_1' });
       }
-      next(err);
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: 'Ошибка по умолчанию.' });
     });
 };
 
-module.exports.getUserMe = (req, res, next) => {
+module.exports.getUserMe = (req, res) => {
   users.findById(req.user)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Данного пользователя не существует');
+        return res
+          .status(FILE_NOT_FOUND)
+          .send({ message: 'Данного пользователя не существует' });
       }
-      return res.send({ data: user });
+      return res.status(200).send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new ErrorCode('Ошибка обработки данных');
+        return res
+          .status(ERROR_CODE)
+          .send({ message: 'Ошибка обработки данных_4' });
       }
-      next(err);
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: 'Ошибка по умолчанию.' });
     });
 };
 
-module.exports.updateUserAvatar = (req, res, next) => {
+module.exports.updateUserAvatar = (req, res) => {
   const { avatar } = req.body;
   users
     .findByIdAndUpdate(
@@ -53,20 +71,26 @@ module.exports.updateUserAvatar = (req, res, next) => {
     )
     .then((cards) => {
       if (!cards) {
-        throw new NotFoundError('Данного пользователя не существует');
+        return res
+          .status(FILE_NOT_FOUND)
+          .send({ message: 'Данного пользователя не существует' });
       }
-      return res.send({ data: cards });
+      return res.status(200).send({ data: cards });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new ErrorCode('Ошибка обработки данных');
+        return res
+          .status(ERROR_CODE)
+          .send({ message: 'Ошибка обработки данных_2' });
       }
 
-      next(err);
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: 'Ошибка по умолчанию.' });
     });
 };
 
-module.exports.updateUserNameAndabout = (req, res, next) => {
+module.exports.updateUserNameAndabout = (req, res) => {
   const { name, about } = req.body;
   users
     .findByIdAndUpdate(
@@ -76,15 +100,21 @@ module.exports.updateUserNameAndabout = (req, res, next) => {
     )
     .then((cards) => {
       if (!cards) {
-        throw new NotFoundError('Данного пользователя не существует');
+        return res
+          .status(FILE_NOT_FOUND)
+          .send({ message: 'Данного пользователя не существует' });
       }
-      return res.send({ data: cards });
+      return res.status(200).send({ data: cards });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new ErrorCode('Ошибка обработки данных');
+        return res
+          .status(ERROR_CODE)
+          .send({ message: 'Ошибка обработки данных_3' });
       }
 
-      next(err);
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: 'Ошибка по умолчанию.' });
     });
 };
