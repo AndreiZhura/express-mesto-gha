@@ -1,8 +1,12 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { SALT_ROUND, SECRET_KEY_JWT } = require('../constants/constants');
+/// Ошибки
 const Conflict = require('../errors/Conflict');
 const Forbidden = require('../errors/Forbidden');
+const ErrorCode = require('../errors/ErrorCode');
+const Unauthorized = require('../errors/Unauthorized');
+///
 const users = require('../models/users');
 
 module.exports.createUser = (req, res, next) => {
@@ -35,7 +39,9 @@ module.exports.createUser = (req, res, next) => {
     .then((user) => {
       res.status(201).send(user);
     })
-    .catch((err) => res.status(400).send(err));
+    .catch(() => {
+      throw new ErrorCode('некорректный запрос серверу');
+    });
 };
 
 module.exports.login = (req, res) => {
@@ -47,7 +53,7 @@ module.exports.login = (req, res) => {
       const token = jwt.sign({ _id: user._id }, SECRET_KEY_JWT, { expiresIn: '7d' });
       res.cookie('token', token, { httpOnly: true }).send(token);
     })
-    .catch((err) => {
-      res.status(401).send({ message: err.message });
+    .catch(() => {
+      throw new Unauthorized('Ошибка авторизации');
     });
 };

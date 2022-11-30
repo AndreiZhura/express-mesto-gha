@@ -1,11 +1,9 @@
 const card = require('../models/card');
-const {
-  ERROR_CODE,
-  INTERNAL_SERVER_ERROR,
-  FILE_NOT_FOUND,
-} = require('../constants/constants');
+/// Ошибки
+const ErrorCode = require('../errors/ErrorCode');
+const NotFoundError = require('../errors/NotFoundError');
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
   card
@@ -13,52 +11,38 @@ module.exports.createCard = (req, res) => {
     .then((data) => res.status(200).send(data))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res
-          .status(ERROR_CODE)
-          .send({ message: 'Ошибка обработки данных' });
+        throw new ErrorCode('Ошибка обработки данных');
       }
 
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка по умолчанию.' });
+      next(err);
     });
 };
 
-module.exports.getCard = (req, res) => {
+module.exports.getCard = (req, res, next) => {
   card
     .find({})
     .then((cards) => res.send({ data: cards }))
-    .catch(() => {
-      res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка по умолчанию.' });
-    });
+    .catch(next);
 };
 
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   card
     .findByIdAndRemove(req.params.cardId)
     .then((cards) => {
       if (!cards) {
-        return res
-          .status(FILE_NOT_FOUND)
-          .send({ message: 'Данной карточки не существует' });
+        throw new NotFoundError('Данной карточки не существует');
       }
       return res.send({ data: cards });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res
-          .status(ERROR_CODE)
-          .send({ message: 'Ошибка обработки данных' });
+        throw new ErrorCode('Ошибка обработки данных');
       }
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка по умолчанию.' });
+      next(err);
     });
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   card
     .findByIdAndUpdate(
       req.params.cardId,
@@ -67,25 +51,19 @@ module.exports.likeCard = (req, res) => {
     )
     .then((cards) => {
       if (!cards) {
-        return res
-          .status(FILE_NOT_FOUND)
-          .send({ message: 'Данной карточки не существует' });
+        throw new NotFoundError('Данной карточки не существует');
       }
       return res.send({ data: cards });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res
-          .status(ERROR_CODE)
-          .send({ message: 'Ошибка обработки данных' });
+        throw new ErrorCode('Ошибка обработки данных');
       }
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка по умолчанию.' });
+      next(err);
     });
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   card
     .findByIdAndUpdate(
       req.params.cardId,
@@ -94,20 +72,14 @@ module.exports.dislikeCard = (req, res) => {
     )
     .then((cards) => {
       if (!cards) {
-        return res
-          .status(FILE_NOT_FOUND)
-          .send({ message: 'Данной карточки не существует' });
+        throw new NotFoundError('Данной карточки не существует');
       }
       return res.send({ data: cards });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res
-          .status(ERROR_CODE)
-          .send({ message: 'Ошибка обработки данных' });
+        throw new ErrorCode('Ошибка обработки данных');
       }
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка по умолчанию.' });
+      next(err);
     });
 };
