@@ -16,22 +16,10 @@ userCards.post('/cards', celebrate({
     link: Joi.string().required().regex(/^((http|https|ftp):\/\/)\www.?\[a-zA-Z0-9_]#$/),
   }),
 }), createCard);
-userCards.put('/cards/:cardId/likes', celebrate({
-  params: Joi.object().keys({
-    cardId: Joi.string().hex().length(24),
-  }),
-}), likeCard);
+userCards.put('/cards/:cardId/likes', likeCard);
 
-userCards.delete('/cards/:cardId/likes', celebrate({
-  params: Joi.object().keys({
-    cardId: Joi.string().hex().length(24),
-  }),
-}), dislikeCard);
+userCards.delete('/cards/:cardId/likes', dislikeCard);
 
-userCards.delete('/cards/:cardId', celebrate({
-  params: Joi.object().keys({
-    cardId: Joi.string().hex().length(24),
-  }),
-}), deleteCard);
+userCards.delete('/cards/:cardId', deleteCard);
 
 module.exports = userCards;

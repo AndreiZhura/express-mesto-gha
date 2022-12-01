@@ -49,7 +49,7 @@ module.exports.deleteCard = (req, res) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         return res
-          .status(ERROR_CODE)
+          .status(403)
           .send({ message: 'Ошибка обработки данных' });
       }
       return res
