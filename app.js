@@ -44,6 +44,6 @@ app.use('/', userCardsRouters);
 
 app.use(errors());
 
-app.use('*', (req, res) => { res.status(FILE_NOT_FOUND).send({ message: 'Запрашиваемый ресурс не найден' }); });
+app.use('*', (req, res) => { res.status(404).send({ message: 'Запрашиваемый ресурс не найден' }); });
 
 app.listen(PORT);
