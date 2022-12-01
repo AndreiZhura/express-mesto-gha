@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { SALT_ROUND, SECRET_KEY_JWT } = require('../constants/constants');
 const ErrorCode = require('../errors/ErrorCode');
+const Conflict = require('../errors/Conflict');
 const AuthorizationRequired = require('../errors/AuthorizationRequired');
 const users = require('../models/users');
 
@@ -20,7 +21,7 @@ module.exports.createUser = (req, res, next) => {
     // eslint-disable-next-line consistent-return
     .then((user) => {
       if (user) {
-        throw new AuthorizationRequired('Такой пользователь уже существует!');
+        throw new Conflict('Такой пользователь уже существует!');
       }
     });
 
@@ -60,6 +61,6 @@ module.exports.login = (req, res) => {
       res.cookie('token', token, { httpOnly: true }).send({ token });
     })
     .catch((err) => {
-      res.status(401).send({ message: err.message });
+      throw new AuthorizationRequired(err.message);
     });
 };
