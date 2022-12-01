@@ -3,7 +3,6 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const { errors } = require('celebrate');
 const { celebrate, Joi } = require('celebrate');
-const { FILE_NOT_FOUND } = require('./constants/constants');
 const userRouters = require('./routers/users');
 const userCardsRouters = require('./routers/card');
 
