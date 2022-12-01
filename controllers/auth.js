@@ -16,7 +16,7 @@ module.exports.createUser = (req, res, next) => {
     .findOne({ email })
   // eslint-disable-next-line consistent-return
     .then((user) => {
-      if (user) throw new Conflict();
+      if (user) throw new Conflict('Такой пользователь уже существует!');
     }).catch(next);
 
   return bcrypt
