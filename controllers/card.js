@@ -1,9 +1,4 @@
 const card = require('../models/card');
-const {
-  ERROR_CODE,
-  INTERNAL_SERVER_ERROR,
-  FILE_NOT_FOUND,
-} = require('../constants/constants');
 
 module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
@@ -14,12 +9,12 @@ module.exports.createCard = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res
-          .status(ERROR_CODE)
+          .status(400)
           .send({ message: 'Ошибка обработки данных' });
       }
 
       return res
-        .status(INTERNAL_SERVER_ERROR)
+        .status(500)
         .send({ message: 'Ошибка по умолчанию.' });
     });
 };
@@ -30,7 +25,7 @@ module.exports.getCard = (req, res) => {
     .then((cards) => res.status(200).send({ data: cards }))
     .catch(() => {
       res
-        .status(INTERNAL_SERVER_ERROR)
+        .status(500)
         .send({ message: 'Ошибка по умолчанию.' });
     });
 };
@@ -41,7 +36,7 @@ module.exports.deleteCard = (req, res) => {
     .then((cards) => {
       if (!cards) {
         return res
-          .status(FILE_NOT_FOUND)
+          .status(404)
           .send({ message: 'Данной карточки не существует' });
       }
       if (!cards.owner.equals(req.user._id)) {
@@ -56,7 +51,7 @@ module.exports.deleteCard = (req, res) => {
           .send({ message: 'Ошибка обработки данных' });
       }
       return res
-        .status(INTERNAL_SERVER_ERROR)
+        .status(500)
         .send({ message: 'Ошибка по умолчанию.' });
     });
 };
@@ -71,7 +66,7 @@ module.exports.likeCard = (req, res) => {
     .then((cards) => {
       if (!cards) {
         return res
-          .status(FILE_NOT_FOUND)
+          .status(404)
           .send({ message: 'Данной карточки не существует' });
       }
       return res.send({ data: cards });
@@ -79,11 +74,11 @@ module.exports.likeCard = (req, res) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         return res
-          .status(ERROR_CODE)
+          .status(400)
           .send({ message: 'Ошибка обработки данных' });
       }
       return res
-        .status(INTERNAL_SERVER_ERROR)
+        .status(500)
         .send({ message: 'Ошибка по умолчанию.' });
     });
 };
@@ -98,7 +93,7 @@ module.exports.dislikeCard = (req, res) => {
     .then((cards) => {
       if (!cards) {
         return res
-          .status(FILE_NOT_FOUND)
+          .status(404)
           .send({ message: 'Данной карточки не существует' });
       }
       return res.send({ data: cards });
@@ -106,11 +101,11 @@ module.exports.dislikeCard = (req, res) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         return res
-          .status(ERROR_CODE)
+          .status(400)
           .send({ message: 'Ошибка обработки данных' });
       }
       return res
-        .status(INTERNAL_SERVER_ERROR)
+        .status(500)
         .send({ message: 'Ошибка по умолчанию.' });
     });
 };

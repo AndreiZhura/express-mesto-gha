@@ -1,9 +1,4 @@
 const users = require('../models/users');
-const {
-  ERROR_CODE,
-  INTERNAL_SERVER_ERROR,
-  FILE_NOT_FOUND,
-} = require('../constants/constants');
 
 module.exports.getUser = (req, res) => {
   users
@@ -11,7 +6,7 @@ module.exports.getUser = (req, res) => {
     .then((user) => res.status(200).send({ message: user }))
     .catch(() => {
       res
-        .status(INTERNAL_SERVER_ERROR)
+        .status(500)
         .send({ message: 'Ошибка по умолчанию.' });
     });
 };
@@ -22,7 +17,7 @@ module.exports.getUserId = (req, res) => {
     .then((cards) => {
       if (!cards) {
         return res
-          .status(FILE_NOT_FOUND)
+          .status(404)
           .send({ message: 'Данного пользователя не существует' });
       }
       return res.send({ data: cards });
@@ -30,11 +25,11 @@ module.exports.getUserId = (req, res) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         return res
-          .status(ERROR_CODE)
+          .status(400)
           .send({ message: 'Ошибка обработки данных_1' });
       }
       return res
-        .status(INTERNAL_SERVER_ERROR)
+        .status(500)
         .send({ message: 'Ошибка по умолчанию.' });
     });
 };
@@ -44,7 +39,7 @@ module.exports.getUserMe = (req, res) => {
     .then((user) => {
       if (!user) {
         return res
-          .status(FILE_NOT_FOUND)
+          .status(404)
           .send({ message: 'Данного пользователя не существует' });
       }
       return res.status(200).send({ data: user });
@@ -52,11 +47,11 @@ module.exports.getUserMe = (req, res) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         return res
-          .status(ERROR_CODE)
+          .status(400)
           .send({ message: 'Ошибка обработки данных_4' });
       }
       return res
-        .status(INTERNAL_SERVER_ERROR)
+        .status(500)
         .send({ message: 'Ошибка по умолчанию.' });
     });
 };
@@ -72,7 +67,7 @@ module.exports.updateUserAvatar = (req, res) => {
     .then((cards) => {
       if (!cards) {
         return res
-          .status(FILE_NOT_FOUND)
+          .status(404)
           .send({ message: 'Данного пользователя не существует' });
       }
       return res.status(200).send({ data: cards });
@@ -80,12 +75,12 @@ module.exports.updateUserAvatar = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res
-          .status(ERROR_CODE)
+          .status(400)
           .send({ message: 'Ошибка обработки данных_2' });
       }
 
       return res
-        .status(INTERNAL_SERVER_ERROR)
+        .status(500)
         .send({ message: 'Ошибка по умолчанию.' });
     });
 };
@@ -101,7 +96,7 @@ module.exports.updateUserNameAndabout = (req, res) => {
     .then((cards) => {
       if (!cards) {
         return res
-          .status(FILE_NOT_FOUND)
+          .status(404)
           .send({ message: 'Данного пользователя не существует' });
       }
       return res.status(200).send({ data: cards });
@@ -109,12 +104,12 @@ module.exports.updateUserNameAndabout = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res
-          .status(ERROR_CODE)
+          .status(400)
           .send({ message: 'Ошибка обработки данных_3' });
       }
 
       return res
-        .status(INTERNAL_SERVER_ERROR)
+        .status(500)
         .send({ message: 'Ошибка по умолчанию.' });
     });
 };
