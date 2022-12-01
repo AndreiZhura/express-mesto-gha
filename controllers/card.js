@@ -44,6 +44,9 @@ module.exports.deleteCard = (req, res) => {
           .status(FILE_NOT_FOUND)
           .send({ message: 'Данной карточки не существует' });
       }
+      if (!cards.owner.equals(req.user._id)) {
+        res.status(403).send({ message: 'попытка удалить карточку другово пользователя' });
+      }
       return res.send({ data: cards });
     })
     .catch((err) => {
