@@ -1,26 +1,17 @@
-const userRouters = require('express').Router();
-const { celebrate, Joi } = require('celebrate');
+const userCards = require('express').Router();
 
 const {
-  getUserMe,
-  getUser,
-  getUserId,
-  updateUserAvatar,
-  updateUserNameAndabout,
-} = require('../controllers/users');
+  createCard,
+  getCard,
+  deleteCard,
+  likeCard,
+  dislikeCard,
+} = require('../controllers/card');
 
-userRouters.get('/users/me', getUserMe);
-userRouters.get('/users', getUser);
-userRouters.get('/users/:userId', celebrate({
-  params: Joi.object().keys({
-    postId: Joi.string().hex().length(24),
-  }),
-}), getUserId);
-userRouters.patch('/users/me', updateUserNameAndabout);
-userRouters.patch('/users/me/avatar', celebrate({
-  body: Joi.object().keys({
-    avatar: Joi.string().regex(/^((http|https|ftp):\/\/)\www.?\[a-zA-Z0-9_]#$/).min(2).max(30),
-  }),
-}), updateUserAvatar);
+userCards.get('/cards', getCard);
+userCards.post('/cards', createCard);
+userCards.put('/cards/:cardId/likes', likeCard);
+userCards.delete('/cards/:cardId/likes', dislikeCard);
+userCards.delete('/cards/:cardId', deleteCard);
 
-module.exports = userRouters;
+module.exports = userCards;
