@@ -23,8 +23,9 @@ module.exports.getUserId = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new ErrorCode('Ошибка обработки данных'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -39,8 +40,9 @@ module.exports.getUserMe = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new ErrorCode('Ошибка обработки данных'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -61,8 +63,9 @@ module.exports.updateUserAvatar = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ErrorCode('Ошибка обработки данных'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -83,7 +86,8 @@ module.exports.updateUserNameAndabout = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ErrorCode('Ошибка обработки данных'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };

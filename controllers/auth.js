@@ -14,7 +14,7 @@ module.exports.createUser = (req, res, next) => {
 
   users
     .findOne({ email })
-  // eslint-disable-next-line consistent-return
+    // eslint-disable-next-line consistent-return
     .then((user) => {
       if (user) throw new Conflict('Такой пользователь уже существует!');
     }).catch(next);
@@ -40,8 +40,9 @@ module.exports.createUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ErrorCode('введены некоректные данные'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 

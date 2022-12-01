@@ -12,8 +12,9 @@ module.exports.createCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ErrorCode('Ошибка обработки данных'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -62,8 +63,9 @@ module.exports.likeCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new ErrorCode('Ошибка обработки данных'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -83,7 +85,8 @@ module.exports.dislikeCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new ErrorCode('Ошибка обработки данных'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
