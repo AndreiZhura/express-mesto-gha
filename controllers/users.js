@@ -1,62 +1,50 @@
 const users = require('../models/users');
+const NotFoundError = require('../errors/NotFoundError');
+const ErrorCode = require('../errors/ErrorCode');
 
-module.exports.getUser = (req, res) => {
+module.exports.getUser = (req, res, next) => {
   users
     .find({})
     .then((user) => res.status(200).send({ message: user }))
-    .catch(() => {
-      res
-        .status(500)
-        .send({ message: 'Ошибка по умолчанию.' });
+    .catch((err) => {
+      next(err);
     });
 };
 
-module.exports.getUserId = (req, res) => {
+module.exports.getUserId = (req, res, next) => {
   users
     .findById(req.params.userId)
     .then((cards) => {
       if (!cards) {
-        return res
-          .status(404)
-          .send({ message: 'Данного пользователя не существует' });
+        throw new NotFoundError('Данного пользователя не существует');
       }
       return res.send({ data: cards });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res
-          .status(400)
-          .send({ message: 'Ошибка обработки данных_1' });
+        next(new ErrorCode('Ошибка обработки данных'));
       }
-      return res
-        .status(500)
-        .send({ message: 'Ошибка по умолчанию.' });
+      next(err);
     });
 };
 
-module.exports.getUserMe = (req, res) => {
+module.exports.getUserMe = (req, res, next) => {
   users.findById(req.user)
     .then((user) => {
       if (!user) {
-        return res
-          .status(404)
-          .send({ message: 'Данного пользователя не существует' });
+        throw new NotFoundError('Данного пользователя не существует');
       }
       return res.status(200).send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res
-          .status(400)
-          .send({ message: 'Ошибка обработки данных_4' });
+        next(new ErrorCode('Ошибка обработки данных'));
       }
-      return res
-        .status(500)
-        .send({ message: 'Ошибка по умолчанию.' });
+      next(err);
     });
 };
 
-module.exports.updateUserAvatar = (req, res) => {
+module.exports.updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
   users
     .findByIdAndUpdate(
@@ -66,26 +54,19 @@ module.exports.updateUserAvatar = (req, res) => {
     )
     .then((cards) => {
       if (!cards) {
-        return res
-          .status(404)
-          .send({ message: 'Данного пользователя не существует' });
+        throw new NotFoundError('Данного пользователя не существует');
       }
       return res.status(200).send({ data: cards });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res
-          .status(400)
-          .send({ message: 'Ошибка обработки данных_2' });
+        next(new ErrorCode('Ошибка обработки данных'));
       }
-
-      return res
-        .status(500)
-        .send({ message: 'Ошибка по умолчанию.' });
+      next(err);
     });
 };
 
-module.exports.updateUserNameAndabout = (req, res) => {
+module.exports.updateUserNameAndabout = (req, res, next) => {
   const { name, about } = req.body;
   users
     .findByIdAndUpdate(
@@ -95,21 +76,14 @@ module.exports.updateUserNameAndabout = (req, res) => {
     )
     .then((cards) => {
       if (!cards) {
-        return res
-          .status(404)
-          .send({ message: 'Данного пользователя не существует' });
+        throw new NotFoundError('Данного пользователя не существует');
       }
       return res.status(200).send({ data: cards });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res
-          .status(400)
-          .send({ message: 'Ошибка обработки данных_3' });
+        next(new ErrorCode('Ошибка обработки данных'));
       }
-
-      return res
-        .status(500)
-        .send({ message: 'Ошибка по умолчанию.' });
+      next(err);
     });
 };
