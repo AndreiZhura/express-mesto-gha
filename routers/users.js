@@ -1,17 +1,33 @@
-const userCards = require('express').Router();
+const userRouters = require('express').Router();
+const { celebrate, Joi } = require('celebrate');
 
 const {
-  createCard,
-  getCard,
-  deleteCard,
-  likeCard,
-  dislikeCard,
-} = require('../controllers/card');
+  getUserMe,
+  getUser,
+  getUserId,
+  updateUserAvatar,
+  updateUserNameAndabout,
+} = require('../controllers/users');
 
-userCards.get('/cards', getCard);
-userCards.post('/cards', createCard);
-userCards.put('/cards/:cardId/likes', likeCard);
-userCards.delete('/cards/:cardId/likes', dislikeCard);
-userCards.delete('/cards/:cardId', deleteCard);
+userRouters.get('/users/me', getUserMe);
+userRouters.get('/users', getUser);
+userRouters.get('/users/:userId', celebrate({
+  params: Joi.object().keys({
+    postId: Joi.string().hex().length(24),
+  }),
+}), getUserId);
 
-module.exports = userCards;
+userRouters.patch('/users/me', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+  }),
+}), updateUserNameAndabout);
+
+userRouters.patch('/users/me/avatar', celebrate({
+  body: Joi.object().keys({
+    avatar: Joi.string().regex(/^((http|https|ftp):\/\/)\www.?\[a-zA-Z0-9_]#$/).min(2).max(30),
+  }),
+}), updateUserAvatar);
+
+module.exports = userRouters;
