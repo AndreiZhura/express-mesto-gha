@@ -21,7 +21,7 @@ module.exports.createUser = (req, res, next) => {
     // eslint-disable-next-line consistent-return
     .then((user) => {
       if (user) {
-        throw new Conflict('Такой пользователь уже существует!');
+        next(new Conflict('Такой пользователь уже существует!'));
       }
     });
 
