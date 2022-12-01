@@ -1,18 +1,18 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { SALT_ROUND, SECRET_KEY_JWT } = require('../constants/constants');
+const ErrorCode = require('../errors/ErrorCode');
+const AuthorizationRequired = require('../errors/AuthorizationRequired');
 const users = require('../models/users');
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   // хешируем пароль
   const {
     name, about, avatar, email, password,
   } = req.body;
 
   if (!email || !password) {
-    return res
-      .status(400)
-      .send({ message: 'Пожалуйста вбейте и Email и Пароль!' });
+    throw new ErrorCode('Пожалуйста вбейте и Email и Пароль!');
   }
 
   users
@@ -20,9 +20,7 @@ module.exports.createUser = (req, res) => {
     // eslint-disable-next-line consistent-return
     .then((user) => {
       if (user) {
-        return res
-          .status(409)
-          .send({ message: 'Такой пользователь уже существует!' });
+        throw new AuthorizationRequired('Такой пользователь уже существует!');
       }
     });
 
@@ -46,8 +44,9 @@ module.exports.createUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'введены некоректные данные' });
+        next(new ErrorCode('введены некоректные данные'));
       }
+      next(err);
     });
 };
 
