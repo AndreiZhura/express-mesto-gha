@@ -13,7 +13,7 @@ userCards.get('/cards', getCard);
 userCards.post('/cards', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required(),
+    link: Joi.string().regex(/(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?/).required(),
   }),
 }), createCard);
 userCards.put('/cards/:cardId/likes', celebrate({
