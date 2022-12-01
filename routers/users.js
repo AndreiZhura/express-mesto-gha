@@ -13,7 +13,7 @@ userRouters.get('/users/me', getUserMe);
 userRouters.get('/users', getUser);
 userRouters.get('/users/:userId', celebrate({
   params: Joi.object().keys({
-    postId: Joi.string().hex().length(24),
+    userId: Joi.string().length(24).hex(),
   }),
 }), getUserId);
 
