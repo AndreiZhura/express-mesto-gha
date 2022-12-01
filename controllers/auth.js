@@ -12,18 +12,12 @@ module.exports.createUser = (req, res, next) => {
     name, about, avatar, email, password,
   } = req.body;
 
-  if (!email || !password) {
-    throw new ErrorCode('Пожалуйста вбейте и Email и Пароль!');
-  }
-
   users
     .findOne({ email })
-    // eslint-disable-next-line consistent-return
+  // eslint-disable-next-line consistent-return
     .then((user) => {
-      if (user) {
-        next(new Conflict('Такой пользователь уже существует!'));
-      }
-    });
+      if (user) throw new Conflict();
+    }).catch(next);
 
   return bcrypt
     .hash(password, SALT_ROUND)
@@ -58,7 +52,7 @@ module.exports.login = (req, res) => {
     .then((user) => {
       // напишите код здесь
       const token = jwt.sign({ _id: user._id }, SECRET_KEY_JWT, { expiresIn: '7d' });
-      res.cookie('token', token, { httpOnly: true }).send({ token });
+      res.send({ token });
     })
     .catch((err) => {
       throw new AuthorizationRequired(err.message);

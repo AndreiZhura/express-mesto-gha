@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const isURL = require('validator/lib/isURL');
 const user = require('./users');
 // напишите код здесь
 const cardSchema = new mongoose.Schema({
@@ -11,6 +12,10 @@ const cardSchema = new mongoose.Schema({
   },
   link: {
     type: String, // имя — это строка
+    validate: {
+      validator: (v) => isURL(v),
+      message: 'Неправильный формат ссылки',
+    },
     required: true, // оно должно быть у каждого пользователя, так что имя — обязательное поле
   },
   owner: {
