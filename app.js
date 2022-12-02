@@ -5,6 +5,7 @@ const { errors } = require('celebrate');
 const { celebrate, Joi } = require('celebrate');
 const userRouters = require('./routers/users');
 const userCardsRouters = require('./routers/card');
+const NotFoundError = require('./errors/NotFoundError');
 
 const app = express();
 const { PORT = 3000 } = process.env;
@@ -21,10 +22,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.post('/signup', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(2),
+    password: Joi.string().required(),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().regex(/(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?/).min(2).max(30),
+    avatar: Joi.string().regex(/(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?/),
   }),
 }), createUser);
 app.post('/signin', celebrate({
@@ -41,7 +42,7 @@ app.use(auth);
 app.use('/', userRouters);
 app.use('/', userCardsRouters);
 
-app.use(errors());
+app.use('*', (req, res, next) => { next(new NotFoundError('Запрашиваемый ресурс не найден')); });
 
 app.use((err, req, res, next) => {
   // если у ошибки нет статуса, выставляем 500
@@ -58,6 +59,6 @@ app.use((err, req, res, next) => {
   next();
 });
 
-app.use('*', (req, res) => { res.status(404).send({ message: 'Запрашиваемый ресурс не найден' }); });
+app.use(errors());
 
 app.listen(PORT);

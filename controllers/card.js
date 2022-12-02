@@ -28,14 +28,17 @@ module.exports.getCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
+  card.findById(req.params.cardId)
+    .then((cards) => {
+      if (!cards.owner.equals(req.user._id)) {
+        throw new Forbidden('попытка удалить карточку другово пользователя');
+      }
+    });
   card
     .findByIdAndRemove(req.params.cardId)
     .then((cards) => {
       if (!cards) {
         throw new NotFoundError('Данной карточки не существует');
-      }
-      if (!cards.owner.equals(req.user._id)) {
-        throw new Forbidden('попытка удалить карточку другово пользователя');
       }
       return res.send({ data: cards });
     })

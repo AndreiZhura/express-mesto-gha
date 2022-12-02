@@ -16,7 +16,7 @@ module.exports.createUser = (req, res, next) => {
     .findOne({ email })
     // eslint-disable-next-line consistent-return
     .then((user) => {
-      if (user) throw new Conflict('Такой пользователь уже существует!');
+      if (user) next(new Conflict('Такой пользователь уже существует!'));
     }).catch(next);
 
   return bcrypt
@@ -46,7 +46,7 @@ module.exports.createUser = (req, res, next) => {
     });
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return users.findUserByCredentials(email, password)
@@ -56,6 +56,6 @@ module.exports.login = (req, res) => {
       res.send({ token });
     })
     .catch((err) => {
-      throw new AuthorizationRequired(err.message);
+      next(new AuthorizationRequired(err.message));
     });
 };
