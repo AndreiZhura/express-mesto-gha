@@ -30,23 +30,20 @@ module.exports.getCard = (req, res, next) => {
 module.exports.deleteCard = (req, res, next) => {
   card.findById(req.params.cardId)
     .then((cards) => {
-      if (!cards.owner.equals(req.user._id)) {
-        throw new Forbidden('попытка удалить карточку другово пользователя');
-      }
-    });
-  card
-    .findByIdAndRemove(req.params.cardId)
-    .then((cards) => {
       if (!cards) {
         throw new NotFoundError('Данной карточки не существует');
+      } else if (!cards.owner.equals(req.user._id)) {
+        throw new Forbidden('попытка удалить карточку другово пользователя');
+      } else {
+        return cards.remove().then(() => res.status(200).send(cards));
       }
-      return res.send({ data: cards });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         throw new Forbidden('Ошибка обработки данных');
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
