@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 const { SALT_ROUND, SECRET_KEY_JWT } = require('../constants/constants');
 const ErrorCode = require('../errors/ErrorCode');
 const Conflict = require('../errors/Conflict');
-const AuthorizationRequired = require('../errors/AuthorizationRequired');
 const users = require('../models/users');
 
 module.exports.createUser = (req, res, next) => {
@@ -16,9 +15,8 @@ module.exports.createUser = (req, res, next) => {
     .findOne({ email })
     // eslint-disable-next-line consistent-return
     .then((user) => {
-      if (user) throw new Conflict('Такой пользователь уже существует');
-    }).catch(next);
-
+      if (user) next(new Conflict('Такой пользователь уже существует'));
+    });
   return bcrypt
     .hash(password, SALT_ROUND)
     .then((hash) => users.create({
@@ -56,6 +54,6 @@ module.exports.login = (req, res, next) => {
       res.send({ token });
     })
     .catch((err) => {
-      next(new AuthorizationRequired(err.message));
+      next(err);
     });
 };
