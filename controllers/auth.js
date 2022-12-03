@@ -10,8 +10,15 @@ module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-  bcrypt
-    .hash(password, SALT_ROUND)
+
+  users
+    .findOne({ email })
+    // eslint-disable-next-line consistent-return
+    .then((user) => {
+      if (user) {
+        throw new Conflict('Такой пользователь уже существует!');
+      } return bcrypt.hash(password, SALT_ROUND);
+    })
     .then((hash) => users.create({
       name,
       avatar,
@@ -20,10 +27,7 @@ module.exports.createUser = (req, res, next) => {
       password: hash, // записываем хеш в базу
     }))
     .then((user) => {
-      if (user) {
-        return next(new Conflict('Такой пользователь уже существует'));
-      }
-      return res.status(201).send({
+      res.status(201).send({
         email: user.email,
         name: user.name,
         about: user.about,
