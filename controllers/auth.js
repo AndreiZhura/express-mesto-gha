@@ -17,7 +17,9 @@ module.exports.createUser = (req, res, next) => {
     .then((user) => {
       if (user) {
         throw new Conflict('Такой пользователь уже существует!');
-      } return bcrypt.hash(password, SALT_ROUND);
+      } else {
+        return bcrypt.hash(password, SALT_ROUND);
+      }
     })
     .then((hash) => users.create({
       name,
