@@ -20,7 +20,10 @@ module.exports.createUser = (req, res, next) => {
       password: hash, // записываем хеш в базу
     }))
     .then((user) => {
-      res.status(201).send({
+      if (user) {
+        return next(new Conflict('Такой пользователь уже существует'));
+      }
+      return res.status(201).send({
         email: user.email,
         name: user.name,
         about: user.about,
@@ -29,9 +32,6 @@ module.exports.createUser = (req, res, next) => {
       });
     })
     .catch((err) => {
-      if (err.code === 11000) {
-        next(new Conflict('Такой пользователь уже существует'));
-      }
       if (err.name === 'ValidationError') {
         next(new ErrorCode('введены некоректные данные'));
       } else {
