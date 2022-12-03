@@ -1,5 +1,6 @@
 const userCards = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
+const { REGEX } = require('../constants/constants');
 
 const {
   createCard,
@@ -13,7 +14,7 @@ userCards.get('/cards', getCard);
 userCards.post('/cards', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().regex(/^((ftp|http|https):\/\/)?(www\.)?([A-Za-zА-Яа-я0-9]{1}[A-Za-zА-Яа-я0-9-]*\.?)*\.{1}[A-Za-zА-Яа-я0-9-]{2,8}(\/([\w#!:.?+=&%@!\-/])*)?/g).required(),
+    link: Joi.string().regex(REGEX).required(),
   }),
 }), createCard);
 userCards.put('/cards/:cardId/likes', celebrate({

@@ -1,5 +1,6 @@
 const userRouters = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
+const { REGEX } = require('../constants/constants');
 
 const {
   getUserMe,
@@ -26,7 +27,7 @@ userRouters.patch('/users/me', celebrate({
 
 userRouters.patch('/users/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().regex(/^((ftp|http|https):\/\/)?(www\.)?([A-Za-zА-Яа-я0-9]{1}[A-Za-zА-Яа-я0-9-]*\.?)*\.{1}[A-Za-zА-Яа-я0-9-]{2,8}(\/([\w#!:.?+=&%@!\-/])*)?/g),
+    avatar: Joi.string().regex(REGEX),
   }),
 }), updateUserAvatar);
 

@@ -10,14 +10,7 @@ module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-
-  users
-    .findOne({ email })
-    // eslint-disable-next-line consistent-return
-    .then((user) => {
-      if (user) next(new Conflict('Такой пользователь уже существует'));
-    });
-  return bcrypt
+  bcrypt
     .hash(password, SALT_ROUND)
     .then((hash) => users.create({
       name,
@@ -36,6 +29,9 @@ module.exports.createUser = (req, res, next) => {
       });
     })
     .catch((err) => {
+      if (err.code === 11000) {
+        next(new Conflict('Такой пользователь уже существует'));
+      }
       if (err.name === 'ValidationError') {
         next(new ErrorCode('введены некоректные данные'));
       } else {

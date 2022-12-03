@@ -6,6 +6,7 @@ const { celebrate, Joi } = require('celebrate');
 const userRouters = require('./routers/users');
 const userCardsRouters = require('./routers/card');
 const NotFoundError = require('./errors/NotFoundError');
+const { REGEX } = require('./constants/constants');
 
 const app = express();
 const { PORT = 3000 } = process.env;
@@ -25,7 +26,7 @@ app.post('/signup', celebrate({
     password: Joi.string().required(),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().regex(/(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?/),
+    avatar: Joi.string().regex(REGEX),
   }),
 }), createUser);
 app.post('/signin', celebrate({
